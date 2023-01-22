@@ -1,0 +1,12 @@
+account Assets:Checking
+account Assets:Savings
+
+2023/01/02 * ABC
+    Assets:Checking      $ 50
+    Expenses:Food        $ -50
+
+2023/01/02 * DEF
+    Assets:Checking      $ 20
+    Expenses:Music
+
+    
