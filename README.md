@@ -1,4 +1,4 @@
-Flutter components to display ledger-cli related data. Builds upon [dart-ledger-cli](https://github.com/amos-joshua/dart-ledger-cli).
+Flutter components to display ledger-cli related data. Builds upon [ledger_cli_dart](https://github.com/amos-joshua/ledger_cli_dart).
 
 This is am early work in progress.
 
