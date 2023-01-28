@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'entries_list_screen.dart';
+import 'ledger_tab_screen.dart';
 import 'ledger_tab_screen.dart';
 
 class SelectAFileScreen extends StatelessWidget {
@@ -16,7 +16,7 @@ class SelectAFileScreen extends StatelessWidget {
         return;
       }
       //Navigator.of(context).push(MaterialPageRoute(builder: (context) => EntriesListScreen(ledgerPath: ledgerPath)));
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LedgerTabScreen()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LedgerTabScreen(ledgerPath: ledgerPath)));
     });
   }
 

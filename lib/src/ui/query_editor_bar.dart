@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
+import '../ledger_session/ledger_session.dart';
 
 class QueryEditorBar extends StatefulWidget {
   const QueryEditorBar({super.key});
@@ -12,10 +13,34 @@ class QueryEditorBar extends StatefulWidget {
 
 class _State extends State<QueryEditorBar> {
   static const ledgerDateFormatter = LedgerDateFormatter();
+  late final LedgerSession ledgerSession;
 
   final searchController = TextEditingController();
-  DateTime? startDate;
-  DateTime? endDate;
+
+  DateTime? get startDate => ledgerSession.query.value.startDate;
+  set startDate(DateTime? newDate) {
+    final newQuery = Query(accounts: ledgerSession.query.value.accounts, startDate: newDate, endDate: ledgerSession.query.value.endDate);
+    ledgerSession.query.value = newQuery;
+  }
+
+  DateTime? get endDate => ledgerSession.query.value.startDate;
+  set endDate(DateTime? newDate) {
+    final newQuery = Query(accounts: ledgerSession.query.value.accounts, endDate: newDate, startDate: ledgerSession.query.value.startDate);
+    ledgerSession.query.value = newQuery;
+  }
+
+  List<String> get accounts => ledgerSession.query.value.accounts;
+  set accounts(List<String> newAccounts) {
+    final newQuery = Query(accounts: newAccounts, endDate: ledgerSession.query.value.endDate, startDate: ledgerSession.query.value.startDate);
+    ledgerSession.query.value = newQuery;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    ledgerSession = LedgerSession.of(context);
+    searchController.text = accounts.join(", ");
+  }
 
   String dateOrNone(DateTime? date) => date == null ? 'None' : ledgerDateFormatter.format(date);
 
@@ -60,16 +85,30 @@ class _State extends State<QueryEditorBar> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    return SizedBox(
-        width: mediaQuery.size.width,
-        height: 60,
-        child: Row(
-      children: [
-        Expanded(child:Card(color: Colors.white, child: TextField(controller: searchController))),
-        ElevatedButton(onPressed: selectStartDate, onLongPress: clearStartDate, child: Text('Start date: ${dateOrNone(startDate)}')),
-        ElevatedButton(onPressed: selectEndDate, onLongPress: clearEndDate, child: Text('End date: ${dateOrNone(endDate)}')),
-      ]
-    ));
+    return ValueListenableBuilder(
+        valueListenable: ledgerSession.query,
+        builder: (context, query, tree) {
+          return SizedBox(
+              width: mediaQuery.size.width,
+              height: 60,
+              child: Row(
+                  children: [
+                    Expanded(
+                        child: Card(
+                            color: Colors.white,
+                            child: TextField(
+                              controller: searchController,
+                              onChanged: (newValue) => accounts = newValue.split(",").map((val) => val.trim()).toList(),
+                            )
+                        )
+                    ),
+                    ElevatedButton(onPressed: selectStartDate, onLongPress: clearStartDate, child: Text('Start date: ${dateOrNone(query.startDate)}')),
+                    ElevatedButton(onPressed: selectEndDate, onLongPress: clearEndDate, child: Text('End date: ${dateOrNone(query.endDate)}')),
+                  ]
+              ));
+        }
+    );
+
   }
 
 }

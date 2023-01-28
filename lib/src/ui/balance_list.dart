@@ -18,15 +18,22 @@ class _State extends State<BalanceList> {
     accounts = widget.balanceResult.balances.keys.toList(growable: false);
   }
 
+  String titleForAccount(String account) {
+    final denominatedAmount = widget.balanceResult.balances[account];
+    if (denominatedAmount == null) return '$account: 0';
+    return '$account: $denominatedAmount';
+  }
+
   @override
   Widget build(BuildContext context) => ListView.builder(
-      itemCount: widget.balanceResult.balances.keys.length,
+      itemCount: accounts.length,
       itemBuilder: (context, entryIndex) {
         final account = accounts[entryIndex];
         return ListTile(
-            contentPadding: const EdgeInsets.all(8.0),
-            leading: const Icon(Icons.monetization_on),
-            title: Text(widget.balanceResult.balances[account]?.toString() ?? ''),
+          visualDensity: VisualDensity.compact,
+          dense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
+          title: Text(titleForAccount(account), style: const TextStyle(fontFamily: 'monospace')),
         );
       }
   );
