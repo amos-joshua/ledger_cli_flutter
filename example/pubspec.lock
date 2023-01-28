@@ -115,10 +115,9 @@ packages:
   ledger_cli:
     dependency: "direct main"
     description:
-      name: ledger_cli
-      sha256: "0d22947e889f58a556208bdeeadb824e4775a6d2dcfbd79fda763fe26241d515"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../ledger-cli-dart"
+      relative: true
+    source: path
     version: "0.1.1"
   ledger_cli_flutter:
     dependency: "direct main"
@@ -126,7 +125,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.1.1"
   lints:
     dependency: transitive
     description:

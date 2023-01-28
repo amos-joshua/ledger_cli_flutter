@@ -11,7 +11,6 @@ class BalanceTab extends StatefulWidget {
 }
 
 class _State extends State<BalanceTab> {
-  static const ledgerFileLoader = LedgerFileLoader();
   late LedgerSession ledgerSession;
   BalanceResult? balanceResult;
 
@@ -33,7 +32,6 @@ class _State extends State<BalanceTab> {
   loadBalances() {
     Future(() => ledgerSession.queryExecutor.queryBalance(ledgerSession.ledger, ledgerSession.query.value)).then((balanceResult) {
       setState(() {
-        print("DBG got alance result: ${balanceResult}");
         this.balanceResult = balanceResult;
       });
     }).catchError((error, stackTrace) {
@@ -45,7 +43,7 @@ class _State extends State<BalanceTab> {
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
     if (balanceResult == null) return const Center(child:CircularProgressIndicator());
-    return BalanceList(balanceResult: balanceResult, key: ValueKey(balanceResult.hashCode));
+    return BalanceTable(balanceResult: balanceResult, key: ValueKey(balanceResult.hashCode));
   }
 
 }
