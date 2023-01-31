@@ -35,20 +35,35 @@ class _State extends State<BalanceTable> {
   }
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(child: DataTable(
-    columns: const [
-      DataColumn(label: Text('Account')),
-      DataColumn(label: Text('Balance')),
-    ],
-    rows: List<DataRow>.generate(
-      accounts.length,
-          (index) => DataRow(
-            color: MaterialStateProperty.resolveWith<Color?>((states) => colorForState(states, index)),
-            cells: <DataCell>[
-              DataCell(Text(accounts[index], style:const TextStyle(fontFamily: 'monospace'))),
-              DataCell(Align(alignment: Alignment.centerRight, child: Text(widget.balanceResult.balances[accounts[index]]?.toString() ?? '',  style:const TextStyle(fontFamily: 'monospace'))), ),
-            ],
-            selected: false,
+  Widget build(BuildContext context) {
+    const headerStyle = TextStyle(fontWeight: FontWeight.bold);
+
+    Widget pad(double padding, Widget child) => Padding(padding: EdgeInsets.all(padding), child: child);
+
+    return SingleChildScrollView(child: Table(
+        columnWidths: const {
+          0: IntrinsicColumnWidth(),
+          1: IntrinsicColumnWidth(),
+          3: FlexColumnWidth(1)
+        },
+        children: [
+           TableRow(
+              children: ['Account', 'Balance', ''].map((header) =>  pad(8, Align(alignment: Alignment.center, child: Text(header, style: headerStyle)))).toList(growable: false)
           ),
-    )));
+          ... accounts.asMap().map((index, account) => MapEntry(index, TableRow(
+            decoration: BoxDecoration(
+              color: index.isEven ? Colors.grey[200] : Colors.white70
+            ),
+              children: [
+                pad(8, Text(account, style:const TextStyle(fontFamily: 'monospace'))),
+                pad(8, Align(alignment: Alignment.centerRight, child: Text(widget.balanceResult.balances[account]?.toString() ?? '',  style:const TextStyle(fontFamily: 'monospace')))),
+                const Text('')
+              ]
+          ))
+          ).values
+
+        ]
+    )
+    );
+  }
 }
