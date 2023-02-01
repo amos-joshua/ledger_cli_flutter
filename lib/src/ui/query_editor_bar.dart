@@ -22,12 +22,12 @@ class _State extends State<QueryEditorBar> {
 
   DateTime? get startDate => ledgerSession.query.value.startDate;
   set startDate(DateTime? newDate) {
-    ledgerSession.query.value = query.modify(startDate: newDate);
+    ledgerSession.query.value = query.modify()..startDate = newDate;
   }
 
   DateTime? get endDate => ledgerSession.query.value.startDate;
   set endDate(DateTime? newDate) {
-    ledgerSession.query.value = query.modify(endDate: newDate);
+    ledgerSession.query.value = query.modify()..endDate = newDate;
   }
 
   List<String> get accounts => ledgerSession.query.value.accounts;

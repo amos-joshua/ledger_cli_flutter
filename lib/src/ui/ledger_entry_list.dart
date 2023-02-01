@@ -20,8 +20,14 @@ class _State extends State<LedgerEntryList> {
     return "$date $code$state${entry.payee}";
   }
 
+  String postingLine(Posting posting) {
+    final accountPadding = posting.amount < 0 ? 49 : 50;
+    final amountPadding = posting.amount < 0 ? 11 : 10;
+    return '${posting.account.padRight(accountPadding)}${posting.amount.toStringAsFixed(2).padLeft(amountPadding)} ${posting.currency}';
+  }
+
   String entrySubtitle(Entry entry) {
-    return entry.postings.map((posting) => '${posting.account}                ${posting.amount}${posting.currency}').join("\n");
+    return entry.postings.map((posting) => postingLine(posting)).join("\n");
   }
 
   @override
@@ -30,10 +36,11 @@ class _State extends State<LedgerEntryList> {
     itemBuilder: (context, entryIndex) {
       final entry = widget.entries[entryIndex];
       return ListTile(
+        tileColor: entryIndex.isEven ? Colors.white : Colors.grey[200],
         contentPadding: const EdgeInsets.all(8.0),
         leading: const Icon(Icons.monetization_on),
         title: Text(entryTitle(entry)),
-        subtitle: Text(entrySubtitle(entry))
+        subtitle: Text(entrySubtitle(entry), style: const TextStyle(fontFamily: 'monospace'))
       );
     }
   );

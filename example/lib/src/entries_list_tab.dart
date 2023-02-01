@@ -12,16 +12,37 @@ class EntriesListTab extends StatefulWidget {
 
 class _State extends State<EntriesListTab> {
   late LedgerSession ledgerSession;
+  final List<Entry> filteredEntries = [];
 
   @override
   void initState() {
     super.initState();
     ledgerSession = LedgerSession.of(context);
+    loadEntries();
+
+    ledgerSession.query.addListener(loadEntries);
+  }
+
+  @override
+  void dispose() {
+    ledgerSession.query.removeListener(loadEntries);
+    super.dispose();
+  }
+
+  loadEntries() {
+    Future(() => ledgerSession.queryExecutor.queryFilter(ledgerSession.ledger, ledgerSession.query.value)).then((filterResult) {
+      setState(() {
+        filteredEntries.clear();
+        filteredEntries.addAll(filterResult.matches.map((invertedPosting) => invertedPosting.parent).toList(growable: false));
+      });
+    }).catchError((error, stackTrace) {
+      print("Query error: $error \n$stackTrace");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return LedgerEntryList(entries: ledgerSession.ledger.entries);
+    return LedgerEntryList(entries: filteredEntries);
   }
 
 }
