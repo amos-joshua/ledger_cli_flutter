@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 import '../ledger_session/ledger_session.dart';
+import 'account_selector_button.dart';
 
 class QueryEditorBar extends StatefulWidget {
   const QueryEditorBar({super.key});
@@ -17,29 +18,33 @@ class _State extends State<QueryEditorBar> {
 
   final searchController = TextEditingController();
 
+  Query get query => ledgerSession.query.value;
+
   DateTime? get startDate => ledgerSession.query.value.startDate;
   set startDate(DateTime? newDate) {
-    final newQuery = Query(accounts: ledgerSession.query.value.accounts, startDate: newDate, endDate: ledgerSession.query.value.endDate);
-    ledgerSession.query.value = newQuery;
+    ledgerSession.query.value = query.modify(startDate: newDate);
   }
 
   DateTime? get endDate => ledgerSession.query.value.startDate;
   set endDate(DateTime? newDate) {
-    final newQuery = Query(accounts: ledgerSession.query.value.accounts, endDate: newDate, startDate: ledgerSession.query.value.startDate);
-    ledgerSession.query.value = newQuery;
+    ledgerSession.query.value = query.modify(endDate: newDate);
   }
 
   List<String> get accounts => ledgerSession.query.value.accounts;
   set accounts(List<String> newAccounts) {
-    final newQuery = Query(accounts: newAccounts, endDate: ledgerSession.query.value.endDate, startDate: ledgerSession.query.value.startDate);
-    ledgerSession.query.value = newQuery;
+    ledgerSession.query.value = query.modify(accounts: newAccounts);
+  }
+
+  String get searchTerm => ledgerSession.query.value.searchTerm;
+  set searchTerm(String newSearchTerm) {
+    ledgerSession.query.value = query.modify(searchTerm: newSearchTerm);
   }
 
   @override
   void initState() {
     super.initState();
     ledgerSession = LedgerSession.of(context);
-    searchController.text = accounts.join(", ");
+    searchController.text = query.searchTerm;
   }
 
   String dateOrNone(DateTime? date) => date == null ? 'None' : ledgerDateFormatter.format(date);
@@ -93,12 +98,13 @@ class _State extends State<QueryEditorBar> {
               height: 60,
               child: Row(
                   children: [
+                    AccountSelectorButton(ledgerSession: ledgerSession),
                     Expanded(
                         child: Card(
                             color: Colors.white,
                             child: TextField(
                               controller: searchController,
-                              onChanged: (newValue) => accounts = newValue.split(",").map((val) => val.trim()).toList(),
+                              onChanged: (newValue) => searchTerm = newValue.trim(),
                             )
                         )
                     ),
