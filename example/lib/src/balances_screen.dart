@@ -7,6 +7,19 @@ import 'balance_tab.dart';
 import 'entries_list_tab.dart';
 import 'entries_tab_label.dart';
 
+class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
+  final Widget child;
+  const TabBarContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) => child;
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => const Size(double.maxFinite, 60.0);
+
+}
+
 class BalancesScreen extends StatefulWidget {
   final String ledgerPath;
   const BalancesScreen({required this.ledgerPath, super.key});
@@ -46,47 +59,29 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
         actions: [
            AccountSelectorButton(ledgerSession: ledgerSession)
         ],
+        bottom: TabBarContainer(
+          child: TabBar(
+              controller: tabController,
+              tabs:[
+                const Tab(text: 'Balances',),
+                ...tabAccounts.asMap().entries.map((tabEntry) => EntriesTabLabel(
+                    index: tabEntry.key + 1,
+                    label: tabEntry.value.join(','),
+                    onDelete: () {
+                      setState(() {
+                        tabAccounts.removeAt(tabEntry.key);
+                        tabSessions.removeAt(tabEntry.key);
+                      });
+                    },
+                    tabController: tabController
+                )
+                )
+              ]
+          )
+        )
       ),
       body: Column(
           children: [
-            Container(
-              color: Theme.of(context).primaryColor,
-              child: TabBar(
-                controller: tabController,
-                tabs:[
-                  const Tab(text: 'Balances',),
-                  ...tabAccounts.asMap().entries.map((tabEntry) => EntriesTabLabel(
-                      index: tabEntry.key + 1,
-                      label: tabEntry.value.join(','),
-                      onDelete: () {
-                        setState(() {
-                          tabAccounts.removeAt(tabEntry.key);
-                          tabSessions.removeAt(tabEntry.key);
-                        });
-                      },
-                      tabController: tabController
-                  )
-
-                    /*Tab(
-                    child: ListTile(
-                      dense: true,
-                      visualDensity: VisualDensity.compact,
-                      title: Text(tabEntry.value.join(', '), style: tabController.index - 1 == tabEntry.key ? const TextStyle(color: Colors.white) : null),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.cancel),
-                        onPressed: () {
-                          setState(() {
-                            tabAccounts.removeAt(tabEntry.key);
-                            tabSessions.removeAt(tabEntry.key);
-                          });
-                        },
-                      ),
-                    )
-                  )*/
-                  )
-                ]
-              )
-            ),
             Expanded(child:TabBarView(
               controller: tabController,
               children: [

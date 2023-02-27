@@ -98,13 +98,16 @@ class _State extends State<QueryEditorBar> {
               height: 60,
               child: Row(
                   children: [
-                    AccountSelectorButton(ledgerSession: ledgerSession),
+                    //AccountSelectorButton(ledgerSession: ledgerSession),
                     Expanded(
                         child: Card(
                             color: Colors.white,
-                            child: TextField(
-                              controller: searchController,
-                              onChanged: (newValue) => searchTerm = newValue.trim(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: TextField(
+                                controller: searchController,
+                                onChanged: (newValue) => searchTerm = newValue.trim(),
+                              )
                             )
                         )
                     ),

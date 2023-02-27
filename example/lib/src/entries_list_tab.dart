@@ -53,7 +53,19 @@ class _State extends State<EntriesListTab> {
 
   @override
   Widget build(BuildContext context) {
-    return LedgerEntryList(entries: filteredEntries);
+    return Column(
+      children: [
+        Container(
+          color: Theme.of(context).primaryColor,
+          child: const QueryEditorBar(
+
+          ),
+        ),
+        Expanded(
+          child: LedgerEntryList(entries: filteredEntries)
+        )
+      ]
+    );
   }
 
 }
