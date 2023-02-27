@@ -43,7 +43,13 @@ class _State extends State<BalanceTab> {
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
     if (balanceResult == null) return const Center(child:CircularProgressIndicator());
-    return BalanceTable(balanceResult: balanceResult, key: ValueKey(balanceResult.hashCode));
+    return BalanceTable(
+      key: ValueKey(balanceResult.hashCode),
+      balanceResult: balanceResult,
+      onDoubleTap: (account) {
+        ledgerSession.query.value = ledgerSession.query.value.modify(accounts: [account]);
+      },
+    );
   }
 
 }
