@@ -3,8 +3,9 @@ import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 
 class BalanceTab extends StatefulWidget {
+  final void Function(String) onAccountDoubleTap;
 
-  const BalanceTab({super.key});
+  const BalanceTab({required this.onAccountDoubleTap, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -39,6 +40,7 @@ class _State extends State<BalanceTab> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
@@ -46,9 +48,7 @@ class _State extends State<BalanceTab> {
     return BalanceTable(
       key: ValueKey(balanceResult.hashCode),
       balanceResult: balanceResult,
-      onDoubleTap: (account) {
-        ledgerSession.query.value = ledgerSession.query.value.modify(accounts: [account]);
-      },
+      onDoubleTap: widget.onAccountDoubleTap,
     );
   }
 

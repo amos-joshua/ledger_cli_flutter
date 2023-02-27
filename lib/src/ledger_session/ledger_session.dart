@@ -5,7 +5,7 @@ import 'ledger_session_container.dart';
 class LedgerSession {
   final queryExecutor = const QueryExecutor();
   final Ledger ledger;
-  final query = ValueNotifier<Query>(Query());
+  final query = ValueNotifier<Query>(Query(accounts: ['Assets']));
   LedgerSession({required this.ledger});
 
   static LedgerSession of(BuildContext context) {

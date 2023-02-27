@@ -3,21 +3,21 @@ import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 
 class EntriesListTab extends StatefulWidget {
-
-  const EntriesListTab({super.key});
+  final LedgerSession ledgerSession;
+  const EntriesListTab({required this.ledgerSession, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
 }
 
 class _State extends State<EntriesListTab> {
-  late LedgerSession ledgerSession;
   final List<Entry> filteredEntries = [];
+  LedgerSession get ledgerSession => widget.ledgerSession;
+  QueryExecutor get queryExecutor => widget.ledgerSession.queryExecutor;
 
   @override
   void initState() {
     super.initState();
-    ledgerSession = LedgerSession.of(context);
     loadEntries();
 
     ledgerSession.query.addListener(loadEntries);
@@ -30,7 +30,7 @@ class _State extends State<EntriesListTab> {
   }
 
   loadEntries() {
-    Future(() => ledgerSession.queryExecutor.queryFilter(ledgerSession.ledger, ledgerSession.query.value)).then((filterResult) {
+    Future(() => queryExecutor.queryFilter(ledgerSession.ledger, ledgerSession.query.value)).then((filterResult) {
       final unsorted = filterResult.matches.map((invertedPosting) => invertedPosting.parent).toList(growable: false);
 
       // This is very inefficient

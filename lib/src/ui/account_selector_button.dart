@@ -15,11 +15,28 @@ class AccountSelectorButton extends StatefulWidget {
 
 class _State extends State<AccountSelectorButton> {
 
+  List<String> possibleAccounts() {
+    final possibleAccounts = <String>[];
+    final sortedAccounts = widget.ledgerSession.ledger.accountManager.accounts.keys.toList(growable: false);
+    sortedAccounts.sort();
+    for (final account in sortedAccounts) {
+      final accountComponents = account.split(':');
+      var nextAccount = "";
+      for (final component in accountComponents) {
+        nextAccount = "$nextAccount${nextAccount.isEmpty ? '' : ':'}$component";
+        if (!possibleAccounts.contains(nextAccount)) {
+          possibleAccounts.add(nextAccount);
+        }
+      }
+    }
+    return possibleAccounts;
+  }
+
   void showSelectDialog() {
     showDialog<List<String>>(
         context: context,
         builder: (dialogContext) => AccountSelectionDialog(
-            possibleAccounts: widget.ledgerSession.ledger.accountManager.accounts.keys.toList(growable: false),
+            possibleAccounts: possibleAccounts(),
             initiallySelected: widget.ledgerSession.query.value.accounts
         )
     ).then((newAccounts) {
