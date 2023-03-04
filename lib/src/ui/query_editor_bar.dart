@@ -101,14 +101,19 @@ class _State extends State<QueryEditorBar> {
                     //AccountSelectorButton(ledgerSession: ledgerSession),
                     Expanded(
                         child: Card(
-                            color: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: TextField(
-                                controller: searchController,
-                                onChanged: (newValue) => searchTerm = newValue.trim(),
-                              )
+                          margin: const EdgeInsets.all(15.0),
+                          color: Theme.of(context).primaryColorLight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: TextField(
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Filter...'
+                              ),
+                              controller: searchController,
+                              onChanged: (newValue) => searchTerm = newValue.trim(),
                             )
+                          )
                         )
                     ),
                     ElevatedButton(onPressed: selectStartDate, onLongPress: clearStartDate, child: Text('Start date: ${dateOrNone(query.startDate)}')),
