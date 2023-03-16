@@ -35,6 +35,7 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
 
 
   void showEntriesScreen(List<String> accounts) {
+    print("DBG ledgerSession has ${ledgerSession.ledger.entries.length} entries");
     setState(() {
       tabAccounts.add(accounts);
       final newSession = LedgerSession(ledger: ledgerSession.ledger);
@@ -88,6 +89,7 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                 LedgerSessionContainer(
                 ledgerSession: ledgerSession,
                 child: LedgerLoadingView(
+                  key: ValueKey(widget.ledgerPath),
                   ledgerPath: widget.ledgerPath,
                   child: BalanceTab(
                     onAccountDoubleTap: (account) => showEntriesScreen([account]),

@@ -31,20 +31,12 @@ class _State extends State<EntriesListTab> {
 
   loadEntries() {
     Future(() => queryExecutor.queryFilter(ledgerSession.ledger, ledgerSession.query.value)).then((filterResult) {
-      final unsorted = filterResult.matches.map((invertedPosting) => invertedPosting.parent).toList(growable: false);
-
-      // This is very inefficient
-      final sorted = <Entry>[];
-      for (final entry in unsorted) {
-        if (!sorted.contains(entry)) {
-          sorted.add(entry);
-        }
-      }
-      sorted.sort((entry1, entry2) => entry2.date.compareTo(entry1.date));
+      final entries = filterResult.matches;
+      entries.sort((entry1, entry2) => entry2.date.compareTo(entry1.date));
 
       setState(() {
         filteredEntries.clear();
-        filteredEntries.addAll(sorted);
+        filteredEntries.addAll(entries);
       });
     }).catchError((error, stackTrace) {
       print("Query error: $error \n$stackTrace");

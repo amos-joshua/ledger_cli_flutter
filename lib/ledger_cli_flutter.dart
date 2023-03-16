@@ -5,4 +5,5 @@ export 'src/ui/balance_table.dart';
 export 'src/ui/query_editor_bar.dart';
 export 'src/ledger_session/ledger_session_container.dart';
 export 'src/ledger_session/ledger_session.dart';
+export 'src/ledger_session/update_request.dart';
 export 'src/ui/account_selector_button.dart';

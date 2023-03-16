@@ -17,13 +17,13 @@ class _State extends State<BalanceTable> {
   @override
   void initState() {
     super.initState();
-    accounts = widget.balanceResult.balances.keys.toList(growable: false);
+    accounts = widget.balanceResult.balances.map((balanceEntry) => balanceEntry.account).toList(growable: false);
   }
 
   String titleForAccount(String account) {
-    final denominatedAmount = widget.balanceResult.balances[account];
-    if (denominatedAmount == null) return '$account: 0';
-    return '$account: $denominatedAmount';
+    final balanceEntry = widget.balanceResult.balances.firstWhere((entry) => entry.account == account, orElse: () => BalanceEntry(account: account, denominatedAmount: DenominatedAmount(0, '')));
+    if (balanceEntry.denominatedAmount.currency.isEmpty) return '$account: 0';
+    return '$account: ${balanceEntry.denominatedAmount}';
   }
 
   Color? colorForState(Set<MaterialState> states, int index) {
@@ -47,7 +47,7 @@ class _State extends State<BalanceTable> {
         ),
         children: [
           pad(8, Text(account, style: textStyle)),
-          pad(8, Align(alignment: Alignment.centerRight, child: Text(widget.balanceResult.balances[account]?.toString() ?? '',  style: textStyle))),
+          pad(8, Align(alignment: Alignment.centerRight, child: Text(widget.balanceResult.balances[index].denominatedAmount.toString(),  style: textStyle))),
           const Text('')
         ].map((child) => GestureDetector(
           onDoubleTap: doubleTapCallback == null ? (){} : () => doubleTapCallback(account),
@@ -78,7 +78,6 @@ class _State extends State<BalanceTable> {
           ),
           ... accounts.asMap().map((index, account) => MapEntry(index, tableRowForAccount(index, account))
           ).values
-
         ]
     )
     );
