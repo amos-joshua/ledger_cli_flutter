@@ -21,7 +21,6 @@ class _State extends State<LedgerLoadingView> {
     super.initState();
     final ledgerSession = LedgerSession.of(context);
     final updateFromFile = LedgerUpdateRequestFromPath(widget.ledgerPath, execute: () {
-      print("DBG loading data from ${widget.ledgerPath}");
       ledgerFileLoader.load(widget.ledgerPath, onApplyFailure: (edit, exc, stackTrace) {
         print("ERROR: could not apply $edit: $exc\n$stackTrace");
       }).then((newLedger) {
