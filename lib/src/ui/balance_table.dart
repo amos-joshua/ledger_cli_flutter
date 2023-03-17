@@ -4,7 +4,8 @@ import 'package:ledger_cli/ledger_cli.dart';
 class BalanceTable extends StatefulWidget {
   final BalanceResult balanceResult;
   final void Function(String)? onDoubleTap;
-  const BalanceTable({required this.balanceResult, this.onDoubleTap, super.key});
+  final List<Widget> Function(BuildContext, String)? actionsBuilder;
+  const BalanceTable({required this.balanceResult, this.onDoubleTap, this.actionsBuilder, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -41,6 +42,7 @@ class _State extends State<BalanceTable> {
   TableRow tableRowForAccount(int index, String account) {
     const textStyle = TextStyle(fontFamily: 'monospace', /*fontWeight: selectedAccount == account ? FontWeight.bold : null*/);
     final doubleTapCallback = widget.onDoubleTap;
+    final actionsBuilder = widget.actionsBuilder;
     return TableRow(
         decoration: BoxDecoration(
             color: selectedAccount == account ? Colors.blue.withAlpha(96) : index.isEven ? Colors.grey[200] : Colors.white70
@@ -48,7 +50,11 @@ class _State extends State<BalanceTable> {
         children: [
           pad(8, Text(account, style: textStyle)),
           pad(8, Align(alignment: Alignment.centerRight, child: Text(widget.balanceResult.balances[index].denominatedAmount.toString(),  style: textStyle))),
-          const Text('')
+          if (actionsBuilder == null) const Text('')
+          else Row(
+            mainAxisSize: MainAxisSize.min,
+            children: actionsBuilder(context, account)
+          )
         ].map((child) => GestureDetector(
           onDoubleTap: doubleTapCallback == null ? (){} : () => doubleTapCallback(account),
           onTap: () {

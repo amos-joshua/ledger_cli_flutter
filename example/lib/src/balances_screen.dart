@@ -35,15 +35,21 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
 
 
   void showEntriesScreen(List<String> accounts) {
-    print("DBG ledgerSession has ${ledgerSession.ledger.entries.length} entries");
     setState(() {
       tabAccounts.add(accounts);
       final newSession = LedgerSession(ledger: ledgerSession.ledger);
       newSession.query.value = newSession.query.value.modify(accounts: accounts);
       tabSessions.add(newSession);
     });
-    //ledgerSession.query.value = ledgerSession.query.value.modify(accounts: accounts);
+  }
 
+  void showEvolutionScreen(List<String> accounts) {
+    setState(() {
+      tabAccounts.add(accounts);
+      final newSession = LedgerSession(ledger: ledgerSession.ledger);
+      newSession.query.value = newSession.query.value.modify(accounts: accounts);
+      tabSessions.add(newSession);
+    });
   }
 
   @override
@@ -53,6 +59,19 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
         initialIndex: tabAccounts.length,
         vsync: this
     );
+
+    List<Widget> actionsFor(BuildContext context, String account) {
+      return [
+        IconButton(
+            onPressed: () => showEntriesScreen([account]),
+            icon: const Icon(Icons.list, color: Colors.black54),
+            tooltip: 'Transactions...'
+        ),
+        IconButton(
+            onPressed: () => showEvolutionScreen([account]),
+            icon: const Icon(Icons.trending_up, color: Colors.black54), tooltip: 'Evolution...'),
+      ];
+    }
 
     return  Scaffold(
       appBar: AppBar(
@@ -92,6 +111,7 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                   key: ValueKey(widget.ledgerPath),
                   ledgerPath: widget.ledgerPath,
                   child: BalanceTab(
+                    actionsBuilder: actionsFor,
                     onAccountDoubleTap: (account) => showEntriesScreen([account]),
                   ),
                   ),

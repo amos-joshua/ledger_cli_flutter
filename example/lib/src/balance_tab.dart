@@ -4,8 +4,9 @@ import 'package:ledger_cli/ledger_cli.dart';
 
 class BalanceTab extends StatefulWidget {
   final void Function(String) onAccountDoubleTap;
+  final List<Widget> Function(BuildContext, String)? actionsBuilder;
 
-  const BalanceTab({required this.onAccountDoubleTap, super.key});
+  const BalanceTab({required this.onAccountDoubleTap, this.actionsBuilder, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -40,7 +41,6 @@ class _State extends State<BalanceTab> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
@@ -49,6 +49,7 @@ class _State extends State<BalanceTab> {
       key: ValueKey(balanceResult.hashCode),
       balanceResult: balanceResult,
       onDoubleTap: widget.onAccountDoubleTap,
+      actionsBuilder: widget.actionsBuilder
     );
   }
 
