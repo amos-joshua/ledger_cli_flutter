@@ -1,3 +1,4 @@
+import 'package:example/src/evolutions_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
@@ -54,7 +55,10 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
           appTabType: AppTabType.evolution
       );
       tabs.add(newTab);
-      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(accounts: accounts);
+      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(
+          accounts: accounts,
+      )..groupBy = PeriodLength.month
+       ..startDate = DateTime(DateTime.now().year, 01, 01);
     });
   }
 
@@ -123,9 +127,10 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                 ),
                 ...tabs.map((tab) => LedgerSessionContainer(
                     ledgerSession: tab.ledgerSession,
-                    child:  EntriesListTab(
+                    child:  tab.appTabType == AppTabType.transactions ? EntriesListTab(
                       ledgerSession: tab.ledgerSession,
-                    )
+                    ) : 
+                        EvolutionsTab()
                   )
                 )
               ]
