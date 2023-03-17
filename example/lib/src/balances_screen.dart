@@ -6,10 +6,11 @@ import 'ledger_loading_view.dart';
 import 'balance_tab.dart';
 import 'entries_list_tab.dart';
 import 'entries_tab_label.dart';
+import 'app_tab.dart';
 
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
-  const TabBarContainer({required this.child});
+  const TabBarContainer({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) => child;
@@ -30,33 +31,38 @@ class BalancesScreen extends StatefulWidget {
 
 class _State extends State<BalancesScreen> with TickerProviderStateMixin {
   final ledgerSession = LedgerSession(ledger: Ledger());
-  final List<List<String>> tabAccounts = [];
-  final List<LedgerSession> tabSessions = [];
+  final List<AppTab> tabs = [];
 
 
   void showEntriesScreen(List<String> accounts) {
     setState(() {
-      tabAccounts.add(accounts);
-      final newSession = LedgerSession(ledger: ledgerSession.ledger);
-      newSession.query.value = newSession.query.value.modify(accounts: accounts);
-      tabSessions.add(newSession);
+      final newTab = AppTab(
+        accounts: accounts,
+        ledgerSession:  LedgerSession(ledger: ledgerSession.ledger),
+        appTabType: AppTabType.transactions
+      );
+      tabs.add(newTab);
+      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(accounts: accounts);
     });
   }
 
   void showEvolutionScreen(List<String> accounts) {
     setState(() {
-      tabAccounts.add(accounts);
-      final newSession = LedgerSession(ledger: ledgerSession.ledger);
-      newSession.query.value = newSession.query.value.modify(accounts: accounts);
-      tabSessions.add(newSession);
+      final newTab = AppTab(
+          accounts: accounts,
+          ledgerSession:  LedgerSession(ledger: ledgerSession.ledger),
+          appTabType: AppTabType.evolution
+      );
+      tabs.add(newTab);
+      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(accounts: accounts);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final tabController = TabController(
-        length: 1 + tabAccounts.length,
-        initialIndex: tabAccounts.length,
+        length: 1 + tabs.length,
+        initialIndex: tabs.length,
         vsync: this
     );
 
@@ -84,13 +90,12 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
               controller: tabController,
               tabs:[
                 const Tab(text: 'Balances',),
-                ...tabAccounts.asMap().entries.map((tabEntry) => EntriesTabLabel(
+                ...tabs.asMap().entries.map((tabEntry) => EntriesTabLabel(
                     index: tabEntry.key + 1,
-                    label: tabEntry.value.join(','),
+                    label: tabEntry.value.accounts.join(','),
                     onDelete: () {
                       setState(() {
-                        tabAccounts.removeAt(tabEntry.key);
-                        tabSessions.removeAt(tabEntry.key);
+                        tabs.removeAt(tabEntry.key);
                       });
                     },
                     tabController: tabController
@@ -116,10 +121,10 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                   ),
                   ),
                 ),
-                ...tabSessions.map((ledgerSession) => LedgerSessionContainer(
-                    ledgerSession: ledgerSession,
+                ...tabs.map((tab) => LedgerSessionContainer(
+                    ledgerSession: tab.ledgerSession,
                     child:  EntriesListTab(
-                      ledgerSession: ledgerSession,
+                      ledgerSession: tab.ledgerSession,
                     )
                   )
                 )
