@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 
 class EvolutionsTable extends StatefulWidget {
@@ -10,6 +11,7 @@ class EvolutionsTable extends StatefulWidget {
 }
 
 class _State extends State<EvolutionsTable> {
+  static final amountFormatter = NumberFormat('###,###.##', 'en_US"');
   late final List<String> accounts;
 
   @override
@@ -29,11 +31,18 @@ class _State extends State<EvolutionsTable> {
   TableRow tableRowForAccount(int index, String account) {
     const textStyle = TextStyle(fontFamily: 'monospace', /*fontWeight: selectedAccount == account ? FontWeight.bold : null*/);
     final balanceEntry = widget.balanceResult.balances[index];
+    final amountString = amountFormatter.format(balanceEntry.denominatedAmount.amount);
+    final amountCurrency = balanceEntry.denominatedAmount.currency;
+    final amountSign = balanceEntry.denominatedAmount.amount > 0 ? '+' : '';
     return TableRow(
+        decoration: BoxDecoration(
+            color: index.isEven ? Colors.grey[200] : Colors.white70
+        ),
         children: [
+          pad(8, Text(balanceEntry.period?.prettyPrint() ?? '')),
           pad(8, Text(account, style: textStyle)),
-          pad(8, Align(alignment: Alignment.centerRight, child: Text(balanceEntry.denominatedAmount.toString(),  style: textStyle))),
-          pad(8, Text(balanceEntry.period?.toString() ?? ''))
+          pad(8, Align(alignment: Alignment.centerRight, child: Text('$amountSign$amountString $amountCurrency',  style: textStyle))),
+          const Text('')
         ].toList(growable: false)
     );
   }
@@ -46,11 +55,12 @@ class _State extends State<EvolutionsTable> {
         columnWidths: const {
           0: IntrinsicColumnWidth(),
           1: IntrinsicColumnWidth(),
+          2: IntrinsicColumnWidth(),
           3: FlexColumnWidth(1)
         },
         children: [
           TableRow(
-              children: ['Account', 'Evolution', 'Period'].map((header) =>  pad(8, Align(alignment: Alignment.center, child: Text(header, style: headerStyle)))).toList(growable: false)
+              children: ['Date(s)', 'Account', 'Amount', ''].map((header) =>  pad(8, Align(alignment: Alignment.center, child: Text(header, style: headerStyle)))).toList(growable: false)
           ),
           ... accounts.asMap().map((index, account) => MapEntry(index, tableRowForAccount(index, account))
           ).values

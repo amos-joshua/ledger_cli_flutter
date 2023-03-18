@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 
 class BalanceTable extends StatefulWidget {
@@ -12,6 +13,7 @@ class BalanceTable extends StatefulWidget {
 }
 
 class _State extends State<BalanceTable> {
+  static final amountFormatter = NumberFormat('###,###.##', 'en_US"');
   late final List<String> accounts;
   String? selectedAccount;
 
@@ -19,12 +21,6 @@ class _State extends State<BalanceTable> {
   void initState() {
     super.initState();
     accounts = widget.balanceResult.balances.map((balanceEntry) => balanceEntry.account).toList(growable: false);
-  }
-
-  String titleForAccount(String account) {
-    final balanceEntry = widget.balanceResult.balances.firstWhere((entry) => entry.account == account, orElse: () => BalanceEntry(account: account, denominatedAmount: DenominatedAmount(0, '')));
-    if (balanceEntry.denominatedAmount.currency.isEmpty) return '$account: 0';
-    return '$account: ${balanceEntry.denominatedAmount}';
   }
 
   Color? colorForState(Set<MaterialState> states, int index) {
@@ -40,6 +36,10 @@ class _State extends State<BalanceTable> {
   Widget pad(double padding, Widget child) => Padding(padding: EdgeInsets.all(padding), child: child);
 
   TableRow tableRowForAccount(int index, String account) {
+    final balanceEntry = widget.balanceResult.balances[index];
+    final amountString = amountFormatter.format(balanceEntry.denominatedAmount.amount);
+    final amountCurrency = balanceEntry.denominatedAmount.currency;
+
     const textStyle = TextStyle(fontFamily: 'monospace', /*fontWeight: selectedAccount == account ? FontWeight.bold : null*/);
     final doubleTapCallback = widget.onDoubleTap;
     final actionsBuilder = widget.actionsBuilder;
@@ -49,7 +49,7 @@ class _State extends State<BalanceTable> {
         ),
         children: [
           pad(8, Text(account, style: textStyle)),
-          pad(8, Align(alignment: Alignment.centerRight, child: Text(widget.balanceResult.balances[index].denominatedAmount.toString(),  style: textStyle))),
+          pad(8, Align(alignment: Alignment.centerRight, child: Text('$amountString $amountCurrency',  style: textStyle))),
           if (actionsBuilder == null) const Text('')
           else Row(
             mainAxisSize: MainAxisSize.min,

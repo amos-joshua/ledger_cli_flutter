@@ -96,6 +96,7 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                 const Tab(text: 'Balances',),
                 ...tabs.asMap().entries.map((tabEntry) => EntriesTabLabel(
                     index: tabEntry.key + 1,
+                    icon: tabEntry.value.appTabType == AppTabType.transactions ? Icons.list : Icons.trending_up,
                     label: tabEntry.value.accounts.join(','),
                     onDelete: () {
                       setState(() {
@@ -129,8 +130,8 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                     ledgerSession: tab.ledgerSession,
                     child:  tab.appTabType == AppTabType.transactions ? EntriesListTab(
                       ledgerSession: tab.ledgerSession,
-                    ) : 
-                        EvolutionsTab()
+                    ) :
+                        EvolutionsTab(key: ValueKey(tab.accounts))
                   )
                 )
               ]
