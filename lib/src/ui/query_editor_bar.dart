@@ -5,7 +5,8 @@ import '../ledger_session/ledger_session.dart';
 import 'account_selector_button.dart';
 
 class QueryEditorBar extends StatefulWidget {
-  const QueryEditorBar({super.key});
+  final bool showAccountsSelection;
+  const QueryEditorBar({this.showAccountsSelection = false, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -87,7 +88,13 @@ class _State extends State<QueryEditorBar> {
     });
   }
 
-  Widget queryBadge(String title, void Function() doubleTapCallback, void Function() deleteCallback) => Container(
+  Widget textQueryBadge(String title, void Function() doubleTapCallback, void Function() deleteCallback) => queryBadge(
+    Text(title),
+    doubleTapCallback,
+    deleteCallback
+  );
+
+  Widget queryBadge(Widget title, void Function() doubleTapCallback, [void Function()? deleteCallback]) => Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(8.0)),
         color: Theme.of(context).primaryColorLight,
@@ -100,20 +107,20 @@ class _State extends State<QueryEditorBar> {
               onDoubleTap: doubleTapCallback,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: Text(title),
+                child: title,
               )
             ),
-            InkWell(
-              onTap: deleteCallback,
-              child: const Icon(Icons.cancel_outlined),
-            )
+            if (deleteCallback != null) InkWell(
+                onTap: deleteCallback,
+                child: const Icon(Icons.cancel_outlined),
+              )
           ]
       )
   );
 
-  Widget startDateBadge(DateTime startDate) => queryBadge('from ${ledgerDateFormatter.format(startDate)}', selectStartDate, clearStartDate);
-  Widget endDateBadge(DateTime endDate) => queryBadge('until ${ledgerDateFormatter.format(endDate)}', selectEndDate, clearEndDate);
-
+  Widget startDateBadge(DateTime startDate) => textQueryBadge('from ${ledgerDateFormatter.format(startDate)}', selectStartDate, clearStartDate);
+  Widget endDateBadge(DateTime endDate) => textQueryBadge('until ${ledgerDateFormatter.format(endDate)}', selectEndDate, clearEndDate);
+  Widget accountsBadge() => queryBadge(AccountSelectorButton(ledgerSession: ledgerSession), (){});
 
 
   @override
@@ -130,7 +137,7 @@ class _State extends State<QueryEditorBar> {
               child: Row(
                   children: [
                     //AccountSelectorButton(ledgerSession: ledgerSession),
-                    Expanded(
+                    if (!widget.showAccountsSelection) Expanded(
                         child: Card(
                           margin: const EdgeInsets.all(15.0),
                           color: Theme.of(context).primaryColorLight,
@@ -146,13 +153,12 @@ class _State extends State<QueryEditorBar> {
                             )
                           )
                         )
-                    ),
+                    )
+                    else const Spacer(),
                     if (queryStartDate != null) startDateBadge(queryStartDate),
                     if (queryEndDate != null) endDateBadge(queryEndDate),
-                    /*
-                    ElevatedButton(onPressed: selectStartDate, onLongPress: clearStartDate, child: Text('Start date: ${dateOrNone(query.startDate)}')),
-                    ElevatedButton(onPressed: selectEndDate, onLongPress: clearEndDate, child: Text('End date: ${dateOrNone(query.endDate)}')),*/
-                    PopupMenuButton(
+                    if (widget.showAccountsSelection) accountsBadge()
+                    else PopupMenuButton(
                       icon: const Icon(Icons.filter_list),
                       itemBuilder: (buildContext) => const [
                         PopupMenuItem(
@@ -163,10 +169,11 @@ class _State extends State<QueryEditorBar> {
                             value: 'endDate',
                             child: Text('Until...')
                         ),
+                        /*
                         PopupMenuItem(
                             value: 'accounts',
                             child: Text('Accounts...'),
-                        ),
+                        ),*/
                         PopupMenuItem(
                             value: 'groupBy',
                             child: Text('Group by...'),
@@ -187,13 +194,6 @@ class _State extends State<QueryEditorBar> {
                         }
                       },
                     )
-                    /*
-                    IconButton(
-                      icon: const Icon(Icons.filter_list),
-                      onPressed: () {
-
-                      },
-                    )*/
                   ]
               ));
         }

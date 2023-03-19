@@ -98,9 +98,6 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
     return  Scaffold(
       appBar: AppBar(
         title: const Text('Ledger'),
-        actions: [
-           AccountSelectorButton(ledgerSession: ledgerSession)
-        ],
         bottom: TabBarContainer(
           child: TabBar(
               controller: tabController,

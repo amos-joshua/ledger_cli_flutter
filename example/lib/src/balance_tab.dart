@@ -45,12 +45,25 @@ class _State extends State<BalanceTab> {
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
     if (balanceResult == null) return const Center(child:CircularProgressIndicator());
-    return BalanceTable(
-      key: ValueKey(balanceResult.hashCode),
-      balanceResult: balanceResult,
-      onDoubleTap: widget.onAccountDoubleTap,
-      actionsBuilder: widget.actionsBuilder
+    return Column(
+        children: [
+          Container(
+            color: Theme.of(context).primaryColor,
+            child: const QueryEditorBar(
+              showAccountsSelection: true,
+            ),
+          ),
+          Expanded(
+              child: BalanceTable(
+                  key: ValueKey(balanceResult.hashCode),
+                  balanceResult: balanceResult,
+                  onDoubleTap: widget.onAccountDoubleTap,
+                  actionsBuilder: widget.actionsBuilder
+              )
+          )
+        ]
     );
+
   }
 
 }

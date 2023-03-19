@@ -50,7 +50,7 @@ class _State extends State<AccountSelectorButton> {
   @override
   Widget build(BuildContext context) {
     final queryAccounts = widget.ledgerSession.query.value.accounts;
-    return ElevatedButton(
+    return TextButton(
         onPressed: showSelectDialog,
         child: Text(queryAccounts.isEmpty ? 'All accounts' : queryAccounts.length == 1 ? queryAccounts.first : '${queryAccounts.length} accounts')
     );
