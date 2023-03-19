@@ -43,10 +43,22 @@ class _State extends State<EvolutionsTab> {
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
     if (balanceResult == null) return const Center(child:CircularProgressIndicator());
-    return EvolutionsTable(
-        key: ValueKey(balanceResult.hashCode),
-        actionsBuilder: widget.actionsBuilder,
-        balanceResult: balanceResult,
+    return Column(
+        children: [
+          Container(
+            color: Theme.of(context).primaryColor,
+            child: const QueryEditorBar(
+
+            ),
+          ),
+          Expanded(
+              child: EvolutionsTable(
+                key: ValueKey(balanceResult.hashCode),
+                actionsBuilder: widget.actionsBuilder,
+                balanceResult: balanceResult,
+              )
+          )
+        ]
     );
   }
 
