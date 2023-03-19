@@ -4,7 +4,8 @@ import 'package:ledger_cli/ledger_cli.dart';
 
 class EvolutionsTable extends StatefulWidget {
   final BalanceResult balanceResult;
-  const EvolutionsTable({required this.balanceResult, super.key});
+  final List<Widget> Function(BuildContext, String, DateRange?)? actionsBuilder;
+  const EvolutionsTable({required this.balanceResult, this.actionsBuilder, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -34,6 +35,7 @@ class _State extends State<EvolutionsTable> {
     final amountString = amountFormatter.format(balanceEntry.denominatedAmount.amount);
     final amountCurrency = balanceEntry.denominatedAmount.currency;
     final amountSign = balanceEntry.denominatedAmount.amount > 0 ? '+' : '';
+    final actionsBuilder = widget.actionsBuilder;
     return TableRow(
         decoration: BoxDecoration(
             color: index.isEven ? Colors.grey[200] : Colors.white70
@@ -42,7 +44,11 @@ class _State extends State<EvolutionsTable> {
           pad(8, Text(balanceEntry.period?.prettyPrint() ?? '')),
           pad(8, Text(account, style: textStyle)),
           pad(8, Align(alignment: Alignment.centerRight, child: Text('$amountSign$amountString $amountCurrency',  style: textStyle))),
-          const Text('')
+          if (actionsBuilder == null) const Text('')
+          else Row(
+              mainAxisSize: MainAxisSize.min,
+              children: actionsBuilder(context, account, balanceEntry.period?.dateRange)
+          )
         ].toList(growable: false)
     );
   }

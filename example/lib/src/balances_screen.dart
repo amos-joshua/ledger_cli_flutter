@@ -35,7 +35,7 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
   final List<AppTab> tabs = [];
 
 
-  void showEntriesScreen(List<String> accounts) {
+  void showEntriesScreen(List<String> accounts, [DateRange? dateRange]) {
     setState(() {
       final newTab = AppTab(
         accounts: accounts,
@@ -43,7 +43,9 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
         appTabType: AppTabType.transactions
       );
       tabs.add(newTab);
-      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(accounts: accounts);
+      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(accounts: accounts)
+        ..startDate = dateRange?.startDateInclusive
+        ..endDate = dateRange?.endDateInclusive;
     });
   }
 
@@ -70,7 +72,17 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
         vsync: this
     );
 
-    List<Widget> actionsFor(BuildContext context, String account) {
+    List<Widget> evolutionsActionSFor(BuildContext context, String account, DateRange? dateRange) {
+      return [
+        IconButton(
+            onPressed: () => showEntriesScreen([account], dateRange),
+            icon: const Icon(Icons.list, color: Colors.black54),
+            tooltip: 'Transactions...'
+        ),
+      ];
+    }
+
+    List<Widget> balancesActionsFor(BuildContext context, String account) {
       return [
         IconButton(
             onPressed: () => showEntriesScreen([account]),
@@ -121,7 +133,7 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                   key: ValueKey(widget.ledgerPath),
                   ledgerPath: widget.ledgerPath,
                   child: BalanceTab(
-                    actionsBuilder: actionsFor,
+                    actionsBuilder: balancesActionsFor,
                     onAccountDoubleTap: (account) => showEntriesScreen([account]),
                   ),
                   ),
@@ -131,7 +143,10 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                     child:  tab.appTabType == AppTabType.transactions ? EntriesListTab(
                       ledgerSession: tab.ledgerSession,
                     ) :
-                        EvolutionsTab(key: ValueKey(tab.accounts))
+                        EvolutionsTab(
+                          key: ValueKey(tab.accounts),
+                          actionsBuilder: evolutionsActionSFor,
+                        )
                   )
                 )
               ]

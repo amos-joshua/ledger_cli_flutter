@@ -3,7 +3,9 @@ import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 
 class EvolutionsTab extends StatefulWidget {
-  const EvolutionsTab({super.key});
+  final List<Widget> Function(BuildContext, String, DateRange?)? actionsBuilder;
+
+  const EvolutionsTab({this.actionsBuilder, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -43,6 +45,7 @@ class _State extends State<EvolutionsTab> {
     if (balanceResult == null) return const Center(child:CircularProgressIndicator());
     return EvolutionsTable(
         key: ValueKey(balanceResult.hashCode),
+        actionsBuilder: widget.actionsBuilder,
         balanceResult: balanceResult,
     );
   }
