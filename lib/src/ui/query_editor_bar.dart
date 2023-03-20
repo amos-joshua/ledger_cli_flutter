@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 import '../ledger_session/ledger_session.dart';
 import 'query_editor_bar/filter_selection_popup.dart';
-import 'query_editor_bar/text_field_delay.dart';
+import 'query_editor_bar/search_field.dart';
 
 class QueryEditorBar extends StatefulWidget {
   final bool searchFiltersAccounts;
@@ -17,8 +17,7 @@ class QueryEditorBar extends StatefulWidget {
 class _State extends State<QueryEditorBar> {
   static const ledgerDateFormatter = LedgerDateFormatter();
   late final LedgerSession ledgerSession;
-  late final searchDelay = TextFieldDelay<String>(onChange: handleSearchUpdate);
-
+  //late final searchDelay = TextFieldDelay<String>(onChange: handleSearchUpdate);
   final searchController = TextEditingController();
 
   Query get query => ledgerSession.query.value;
@@ -148,27 +147,10 @@ class _State extends State<QueryEditorBar> {
               child: Row(
                   children: [
                   Expanded(
-                        child: Card(
-                          margin: const EdgeInsets.all(15.0),
-                          color: Theme.of(context).primaryColorLight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: TextField(
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: widget.searchFiltersAccounts ? 'Assets' : 'Filter...',
-                                suffixIcon: GestureDetector(
-                                  child: const Icon(Icons.close),
-                                  onTap: () {
-                                    searchController.text = '';
-                                    handleSearchUpdate('');
-                                  },
-                                )
-                              ),
-                              controller: searchController,
-                              onChanged: (newValue) => searchDelay.updateValue(newValue),
-                            )
-                          )
+                        child: SearchField(
+                          textEditingController: searchController,
+                          onChange: handleSearchUpdate,
+                          placeholder: widget.searchFiltersAccounts ? 'Assets' : 'Filter...'
                         )
                     ),
                     if (queryStartDate != null) startDateBadge(queryStartDate),
