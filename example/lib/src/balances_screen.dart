@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:example/src/evolutions_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'ledger_loading_view.dart';
 import 'balance_tab.dart';
@@ -23,8 +26,9 @@ class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class BalancesScreen extends StatefulWidget {
+  final LedgerPreferences ledgerPreferences;
   final String ledgerPath;
-  const BalancesScreen({required this.ledgerPath, super.key});
+  const BalancesScreen({required this.ledgerPath, required this.ledgerPreferences, super.key});
 
   @override
   State createState() => _State();
@@ -32,6 +36,7 @@ class BalancesScreen extends StatefulWidget {
 
 class _State extends State<BalancesScreen> with TickerProviderStateMixin {
   final ledgerSession = LedgerSession(ledger: Ledger());
+
   final List<AppTab> tabs = [];
 
 
@@ -98,6 +103,19 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
     return  Scaffold(
       appBar: AppBar(
         title: const Text('Ledger'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.move_to_inbox),
+            onPressed: () {
+              final selectAccountDialog = ImportAccountDialog(context);
+              selectAccountDialog.show(widget.ledgerPreferences.importAccounts).then((importAccount) {
+                if (importAccount == null) return;
+                FilePicker.platform.pickFiles(initialDirectory: widget.ledgerPreferences.defaultCsvImportDirectory).then((result) {
+                  if (result == null) return;
+                });
+              });
+            })
+        ],
         bottom: TabBarContainer(
           child: TabBar(
               controller: tabController,
