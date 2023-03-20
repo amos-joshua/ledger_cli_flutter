@@ -4,11 +4,13 @@ import 'package:ledger_cli/ledger_cli.dart';
 import '../ledger_session/ledger_session.dart';
 import 'query_editor_bar/filter_selection_popup.dart';
 import 'query_editor_bar/search_field.dart';
+import 'query_editor_bar/query_badge.dart';
 
 class QueryEditorBar extends StatefulWidget {
   final bool searchFiltersAccounts;
   final bool allowGroupedBy;
-  const QueryEditorBar({this.searchFiltersAccounts = false, this.allowGroupedBy = false, super.key});
+  final bool allowStartDate;
+  const QueryEditorBar({this.searchFiltersAccounts = false, this.allowGroupedBy = false, this.allowStartDate = true, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -17,7 +19,6 @@ class QueryEditorBar extends StatefulWidget {
 class _State extends State<QueryEditorBar> {
   static const ledgerDateFormatter = LedgerDateFormatter();
   late final LedgerSession ledgerSession;
-  //late final searchDelay = TextFieldDelay<String>(onChange: handleSearchUpdate);
   final searchController = TextEditingController();
 
   Query get query => ledgerSession.query.value;
@@ -40,6 +41,11 @@ class _State extends State<QueryEditorBar> {
   String get searchTerm => ledgerSession.query.value.searchTerm;
   set searchTerm(String newSearchTerm) {
     ledgerSession.query.value = query.modify(searchTerm: newSearchTerm);
+  }
+
+  PeriodLength? get groupBy => ledgerSession.query.value.groupBy;
+  set groupBy(PeriodLength? newGroupBy) {
+    ledgerSession.query.value = query.modify()..groupBy = newGroupBy;
   }
 
   @override
@@ -73,8 +79,8 @@ class _State extends State<QueryEditorBar> {
   void selectEndDate() {
     showDatePicker(
         context: context,
-        initialDate:endDate ?? DateTime.now(),
-        firstDate:DateTime(1900),
+        initialDate: endDate ?? DateTime.now(),
+        firstDate: DateTime(1900),
         lastDate: DateTime(2100)).then((newDate) {
       if (newDate == null) return;
       setState(() {
@@ -89,35 +95,50 @@ class _State extends State<QueryEditorBar> {
     });
   }
 
-  Widget textQueryBadge(String title, void Function() doubleTapCallback, void Function() deleteCallback) => queryBadge(
-    Text(title),
-    doubleTapCallback,
-    deleteCallback
-  );
-
-  Widget queryBadge(Widget title, void Function() doubleTapCallback, [void Function()? deleteCallback]) => Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-        color: Theme.of(context).primaryColorLight,
-      ),
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onDoubleTap: doubleTapCallback,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: title,
-              )
-            ),
-            if (deleteCallback != null) InkWell(
-                onTap: deleteCallback,
-                child: const Icon(Icons.cancel_outlined),
-              )
-          ]
-      )
-  );
+  void selectGroupBy() {
+    showDialog<PeriodLength>(
+        context: context,
+        builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Group by..."),
+        actions: [
+          TextButton(
+            child: const Text("Day"),
+            onPressed: () {
+              Navigator.of(context).pop(PeriodLength.day);
+            },
+          ),
+          TextButton(
+            child: const Text("Week"),
+            onPressed: () {
+              Navigator.of(context).pop(PeriodLength.week);
+            },
+          ),
+          TextButton(
+            child: const Text("Month"),
+            onPressed: () {
+              Navigator.of(context).pop(PeriodLength.month);
+            },
+          ),
+          TextButton(
+            child: const Text("Year"),
+            onPressed: () {
+              Navigator.of(context).pop(PeriodLength.year);
+            },
+          ),
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () {
+              Navigator.of(context).pop(null);
+            },
+          )
+        ],
+      );
+    }).then((newGroupBy) {
+      if (newGroupBy == null) return;
+      groupBy = newGroupBy;
+    });
+  }
 
   void handleSearchUpdate(String newSearchTerm) {
     var trimmedSearchTerm = newSearchTerm.trim();
@@ -130,8 +151,22 @@ class _State extends State<QueryEditorBar> {
     }
   }
 
-  Widget startDateBadge(DateTime startDate) => textQueryBadge('from ${ledgerDateFormatter.format(startDate)}', selectStartDate, clearStartDate);
-  Widget endDateBadge(DateTime endDate) => textQueryBadge('until ${ledgerDateFormatter.format(endDate)}', selectEndDate, clearEndDate);
+  Widget startDateBadge(DateTime startDate) => QueryBadge(
+    label: Text('from ${ledgerDateFormatter.format(startDate)}'),
+    onDoubleTap: selectStartDate,
+    onDelete: clearStartDate
+  );
+
+  Widget endDateBadge(DateTime endDate) => QueryBadge(
+      label: Text('until ${ledgerDateFormatter.format(endDate)}'),
+      onDoubleTap: selectEndDate,
+      onDelete: clearEndDate
+  );
+
+  Widget groupByBadge(PeriodLength groupBy) => QueryBadge(
+      label: Text('Group by ${groupBy.name}'),
+      onDoubleTap: selectGroupBy,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +176,7 @@ class _State extends State<QueryEditorBar> {
         builder: (context, query, tree) {
           final queryStartDate = query.startDate;
           final queryEndDate = query.endDate;
+          final queryGroupBy = query.groupBy;
           return SizedBox(
               width: mediaQuery.size.width,
               height: 60,
@@ -155,10 +191,11 @@ class _State extends State<QueryEditorBar> {
                     ),
                     if (queryStartDate != null) startDateBadge(queryStartDate),
                     if (queryEndDate != null) endDateBadge(queryEndDate),
-                    if (!widget.searchFiltersAccounts) FilterSelectionPopup(
-                        allowGroupedBy: widget.allowGroupedBy,
-                        onStartDate: selectStartDate,
-                        onEndDate: selectEndDate
+                    if (queryGroupBy != null) groupByBadge(queryGroupBy),
+                    FilterSelectionPopup(
+                      onStartDate: widget.allowStartDate ? selectStartDate : null,
+                      onEndDate: selectEndDate,
+                      onGroupBy: widget.allowGroupedBy ? selectGroupBy : null,
                     )
                   ]
               ));

@@ -51,6 +51,8 @@ class _State extends State<BalanceTab> {
             color: Theme.of(context).primaryColor,
             child: const QueryEditorBar(
               searchFiltersAccounts: true,
+              allowStartDate: false,
+              allowGroupedBy: false,
             ),
           ),
           Expanded(
