@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 import '../ledger_session/ledger_session.dart';
 import 'account_selector_button.dart';
+import 'query_editor_bar/filter_selection_popup.dart';
 
 class QueryEditorBar extends StatefulWidget {
   final bool showAccountsSelection;
-  const QueryEditorBar({this.showAccountsSelection = false, super.key});
+  final bool allowGroupedBy;
+  const QueryEditorBar({this.showAccountsSelection = false, this.allowGroupedBy = false, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -158,41 +160,10 @@ class _State extends State<QueryEditorBar> {
                     if (queryStartDate != null) startDateBadge(queryStartDate),
                     if (queryEndDate != null) endDateBadge(queryEndDate),
                     if (widget.showAccountsSelection) accountsBadge()
-                    else PopupMenuButton(
-                      icon: const Icon(Icons.filter_list),
-                      itemBuilder: (buildContext) => const [
-                        PopupMenuItem(
-                            value: 'startDate',
-                            child: Text('From...')
-                        ),
-                        PopupMenuItem(
-                            value: 'endDate',
-                            child: Text('Until...')
-                        ),
-                        /*
-                        PopupMenuItem(
-                            value: 'accounts',
-                            child: Text('Accounts...'),
-                        ),*/
-                        PopupMenuItem(
-                            value: 'groupBy',
-                            child: Text('Group by...'),
-                        )
-                      ],
-                      onSelected: (String value) {
-                        if (value == 'startDate') {
-                          selectStartDate();
-                        }
-                        else if (value == 'endDate') {
-                          selectEndDate();
-                        }
-                        else if (value == 'accounts') {
-
-                        }
-                        else if (value == 'groupBy') {
-
-                        }
-                      },
+                    else FilterSelectionPopup(
+                        allowGroupedBy: widget.allowGroupedBy,
+                        onStartDate: selectStartDate,
+                        onEndDate: selectEndDate
                     )
                   ]
               ));
