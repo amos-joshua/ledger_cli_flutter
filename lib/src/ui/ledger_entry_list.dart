@@ -38,7 +38,7 @@ class _State extends State<LedgerEntryList> {
       return ListTile(
         tileColor: entryIndex.isEven ? Colors.white : Colors.grey[200],
         contentPadding: const EdgeInsets.all(8.0),
-        leading: const Icon(Icons.monetization_on),
+        leading: const Icon(Icons.sync_alt),
         title: Text(entryTitle(entry)),
         subtitle: Text(entrySubtitle(entry), style: const TextStyle(fontFamily: 'monospace'))
       );

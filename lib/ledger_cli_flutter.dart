@@ -6,6 +6,7 @@ export 'src/ui/query_editor_bar.dart';
 export 'src/ui/evolutions_table.dart';
 export 'src/ui/account_selector_button.dart';
 export 'src/ui/import_account_dialog.dart';
+export 'src/ui/pending_entry_list.dart';
 
 export 'src/ledger_session/ledger_session_container.dart';
 export 'src/ledger_session/ledger_session.dart';

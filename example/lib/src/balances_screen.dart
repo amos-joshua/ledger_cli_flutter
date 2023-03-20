@@ -11,6 +11,8 @@ import 'balance_tab.dart';
 import 'entries_list_tab.dart';
 import 'entries_tab_label.dart';
 import 'app_tab.dart';
+import 'import_screen.dart';
+import 'error_dialog.dart';
 
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
@@ -35,6 +37,7 @@ class BalancesScreen extends StatefulWidget {
 }
 
 class _State extends State<BalancesScreen> with TickerProviderStateMixin {
+  static const csvDataLoader = CsvDataLoader();
   final ledgerSession = LedgerSession(ledger: Ledger());
 
   final List<AppTab> tabs = [];
@@ -111,7 +114,20 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
               selectAccountDialog.show(widget.ledgerPreferences.importAccounts).then((importAccount) {
                 if (importAccount == null) return;
                 FilePicker.platform.pickFiles(initialDirectory: widget.ledgerPreferences.defaultCsvImportDirectory).then((result) {
-                  if (result == null) return;
+                  if (result == null) return Future.value();
+                  if (result.files.isEmpty) return Future.value();
+                  final importSession = ImportSession(accountManager: ledgerSession.ledger.accountManager);
+                  final csvFilePath = result.files.first.path;
+                  if (csvFilePath == null) {
+                    throw "No file chosen";
+                  }
+                  final csvLines = csvDataLoader.openStreamFromFile(csvFilePath, csvFormat: importAccount.csvFormat);
+                  return importSession.loadCsvLines(csvLines, importAccount: importAccount).then((placeholder) {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
+                        ImportScreen(importSession: importSession)));
+                  });
+                }).catchError((err, stackTrace) {
+                  ErrorDialog(context).show('Oops', 'Could not import file: $err\n\n$stackTrace');
                 });
               });
             })
