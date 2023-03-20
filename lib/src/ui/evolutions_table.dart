@@ -12,7 +12,7 @@ class EvolutionsTable extends StatefulWidget {
 }
 
 class _State extends State<EvolutionsTable> {
-  static final amountFormatter = NumberFormat('###,###.##', 'en_US"');
+  static final amountFormatter = NumberFormat('###,###.00', 'en_US"');
   late final List<String> accounts;
 
   @override

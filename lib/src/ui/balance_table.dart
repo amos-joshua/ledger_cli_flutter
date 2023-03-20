@@ -13,7 +13,7 @@ class BalanceTable extends StatefulWidget {
 }
 
 class _State extends State<BalanceTable> {
-  static final amountFormatter = NumberFormat('###,###.##', 'en_US"');
+  static final amountFormatter = NumberFormat('###,###.00', 'en_US"');
   late final List<String> accounts;
   String? selectedAccount;
 

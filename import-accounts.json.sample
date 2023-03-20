@@ -1,0 +1,16 @@
+[
+  {
+    "label": "BNP account 1",
+    "sourceAccount": "Assets:checking",
+    "currency": "EUR",
+    "format": "bnp",
+    "defaultDestinationAccount": "Expenses:misc"
+  },
+  {
+    "label": "Wise account 2",
+    "sourceAccount": "Assets:wise-cc",
+    "currency": "USD",
+    "format": "wise",
+    "defaultDestinationAccount": "Expenses:work"
+  }
+]
