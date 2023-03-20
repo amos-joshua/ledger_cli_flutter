@@ -2,22 +2,22 @@
 import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 import '../ledger_session/ledger_session.dart';
-import 'account_selector_button.dart';
 import 'query_editor_bar/filter_selection_popup.dart';
+import 'query_editor_bar/text_field_delay.dart';
 
 class QueryEditorBar extends StatefulWidget {
-  final bool showAccountsSelection;
+  final bool searchFiltersAccounts;
   final bool allowGroupedBy;
-  const QueryEditorBar({this.showAccountsSelection = false, this.allowGroupedBy = false, super.key});
+  const QueryEditorBar({this.searchFiltersAccounts = false, this.allowGroupedBy = false, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
-
 }
 
 class _State extends State<QueryEditorBar> {
   static const ledgerDateFormatter = LedgerDateFormatter();
   late final LedgerSession ledgerSession;
+  late final searchDelay = TextFieldDelay<String>(onChange: handleSearchUpdate);
 
   final searchController = TextEditingController();
 
@@ -120,10 +120,19 @@ class _State extends State<QueryEditorBar> {
       )
   );
 
+  void handleSearchUpdate(String newSearchTerm) {
+    var trimmedSearchTerm = newSearchTerm.trim();
+    if (widget.searchFiltersAccounts) {
+      final lowercaseSearchTerm = trimmedSearchTerm.isEmpty ? 'assets' : trimmedSearchTerm.toLowerCase();
+      accounts = ledgerSession.ledger.accountManager.accounts.keys.where((account) => account.toLowerCase().contains(lowercaseSearchTerm)).toList(growable: false);
+    }
+    else {
+      searchTerm = trimmedSearchTerm;
+    }
+  }
+
   Widget startDateBadge(DateTime startDate) => textQueryBadge('from ${ledgerDateFormatter.format(startDate)}', selectStartDate, clearStartDate);
   Widget endDateBadge(DateTime endDate) => textQueryBadge('until ${ledgerDateFormatter.format(endDate)}', selectEndDate, clearEndDate);
-  Widget accountsBadge() => queryBadge(AccountSelectorButton(ledgerSession: ledgerSession), (){});
-
 
   @override
   Widget build(BuildContext context) {
@@ -138,29 +147,33 @@ class _State extends State<QueryEditorBar> {
               height: 60,
               child: Row(
                   children: [
-                    //AccountSelectorButton(ledgerSession: ledgerSession),
-                    if (!widget.showAccountsSelection) Expanded(
+                  Expanded(
                         child: Card(
                           margin: const EdgeInsets.all(15.0),
                           color: Theme.of(context).primaryColorLight,
                           child: Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: TextField(
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Filter...'
+                                hintText: widget.searchFiltersAccounts ? 'Assets' : 'Filter...',
+                                suffixIcon: GestureDetector(
+                                  child: const Icon(Icons.close),
+                                  onTap: () {
+                                    searchController.text = '';
+                                    handleSearchUpdate('');
+                                  },
+                                )
                               ),
                               controller: searchController,
-                              onChanged: (newValue) => searchTerm = newValue.trim(),
+                              onChanged: (newValue) => searchDelay.updateValue(newValue),
                             )
                           )
                         )
-                    )
-                    else const Spacer(),
+                    ),
                     if (queryStartDate != null) startDateBadge(queryStartDate),
                     if (queryEndDate != null) endDateBadge(queryEndDate),
-                    if (widget.showAccountsSelection) accountsBadge()
-                    else FilterSelectionPopup(
+                    if (!widget.searchFiltersAccounts) FilterSelectionPopup(
                         allowGroupedBy: widget.allowGroupedBy,
                         onStartDate: selectStartDate,
                         onEndDate: selectEndDate

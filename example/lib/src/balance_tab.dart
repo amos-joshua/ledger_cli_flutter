@@ -50,7 +50,7 @@ class _State extends State<BalanceTab> {
           Container(
             color: Theme.of(context).primaryColor,
             child: const QueryEditorBar(
-              showAccountsSelection: true,
+              searchFiltersAccounts: true,
             ),
           ),
           Expanded(
