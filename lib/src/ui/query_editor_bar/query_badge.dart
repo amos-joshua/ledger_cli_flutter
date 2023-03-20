@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class QueryBadge extends StatelessWidget {
-  final void Function()? onDoubleTap;
+  final void Function()? onTap;
   final void Function()? onDelete;
   final Widget label;
 
-  const QueryBadge({required this.label, this.onDoubleTap, this.onDelete, super.key});
+  const QueryBadge({required this.label, this.onTap, this.onDelete, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class QueryBadge extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                  onDoubleTap: onDoubleTap ?? (){},
+                  onTap: onTap ?? (){},
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: label,

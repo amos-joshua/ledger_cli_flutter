@@ -153,19 +153,19 @@ class _State extends State<QueryEditorBar> {
 
   Widget startDateBadge(DateTime startDate) => QueryBadge(
     label: Text('from ${ledgerDateFormatter.format(startDate)}'),
-    onDoubleTap: selectStartDate,
+    onTap: selectStartDate,
     onDelete: clearStartDate
   );
 
   Widget endDateBadge(DateTime endDate) => QueryBadge(
       label: Text('until ${ledgerDateFormatter.format(endDate)}'),
-      onDoubleTap: selectEndDate,
+      onTap: selectEndDate,
       onDelete: clearEndDate
   );
 
   Widget groupByBadge(PeriodLength groupBy) => QueryBadge(
       label: Text('Group by ${groupBy.name}'),
-      onDoubleTap: selectGroupBy,
+      onTap: selectGroupBy,
   );
 
   @override
