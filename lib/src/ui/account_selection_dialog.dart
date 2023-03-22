@@ -4,16 +4,17 @@ import 'query_editor_bar/text_field_delay.dart';
 
 class AccountSelectionDialog extends StatefulWidget {
   final List<String> possibleAccounts;
-  final PendingImportedEntry? pendingEntry;
-  const AccountSelectionDialog({super.key, required this.possibleAccounts, this.pendingEntry});
+  final String title;
+  final String message;
+  const AccountSelectionDialog({super.key, required this.possibleAccounts, required this.title, required this.message});
   
   @override
   State<StatefulWidget> createState() => _State();
 
-  static Future<String?> show(BuildContext context, {required List<String> possibleAccounts}) {
+  static Future<String?> show(BuildContext context, {required List<String> possibleAccounts, String title = 'Account', String message = ''}) {
     return showDialog<String>(
         context: context,
-        builder: (dialogContext) => AccountSelectionDialog(possibleAccounts: possibleAccounts)
+        builder: (dialogContext) => AccountSelectionDialog(possibleAccounts: possibleAccounts, title: title, message: message)
     );
   }
 }
@@ -56,16 +57,12 @@ class _State extends State<AccountSelectionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final pendingEntry = widget.pendingEntry;
     filterFocusNode.requestFocus();
     return AlertDialog(
-        title:  const Text('Accounts'),
+        title: Text(widget.title),
         content: Column(
           children: [
-            if (pendingEntry != null) ...[
-              const Text('Destination account for transaction:'),
-              Text(pendingEntry.csvLine.description, style: const TextStyle(fontFamily: 'monospace'))
-            ],
+            if (widget.message.isNotEmpty) Text(widget.message, style: const TextStyle(fontFamily: 'monospace')),
             TextField(
               controller: filterEditingController,
               onChanged: (newValue) => textFieldDelay.updateValue(newValue),
