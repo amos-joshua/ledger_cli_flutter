@@ -1,58 +1,86 @@
 import 'package:flutter/material.dart';
-
+import 'package:ledger_cli/ledger_cli.dart';
+import 'query_editor_bar/text_field_delay.dart';
 
 class AccountSelectionDialog extends StatefulWidget {
   final List<String> possibleAccounts;
-  final List<String> initiallySelected;
-
-  const AccountSelectionDialog({super.key, required this.possibleAccounts, required this.initiallySelected});
+  final PendingImportedEntry? pendingEntry;
+  const AccountSelectionDialog({super.key, required this.possibleAccounts, this.pendingEntry});
   
   @override
   State<StatefulWidget> createState() => _State();
+
+  static Future<String?> show(BuildContext context, {required List<String> possibleAccounts}) {
+    return showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AccountSelectionDialog(possibleAccounts: possibleAccounts)
+    );
+  }
 }
 
 class _State extends State<AccountSelectionDialog> {
-  final List<String> selectedAccounts = [];
+  final filterEditingController = TextEditingController();
+  final filterFocusNode = FocusNode();
+  String selectedAccount = '';
+  String filter = '';
+
+  late final textFieldDelay = TextFieldDelay(onChange: updateFilter);
+
+  List<String> filteredAccounts() => widget.possibleAccounts.where((account) => account.toLowerCase().contains(filter)).toList(growable: false);
+
+  String firstFilterMatch() => widget.possibleAccounts.firstWhere((account) => account.toLowerCase().contains(filter), orElse: () => '');
 
   @override
   void initState() {
     super.initState();
-    selectedAccounts.addAll(widget.initiallySelected);
-  }
-  
-  String selectedCount() {
-    return selectedAccounts.isEmpty ? '' : ' (${selectedAccounts.length} selected)';
   }
 
+  void updateFilter(String newFilter) {
+    setState((){
+      filter = newFilter.toLowerCase();
+      selectedAccount = filter.isEmpty ? '' : firstFilterMatch();
+    });
+  }
 
-  Widget accountCheckboxList() => SingleChildScrollView(
-    child: ListBody(
-      children: widget.possibleAccounts.map((account) =>
-        CheckboxListTile(
-            controlAffinity: ListTileControlAffinity.leading,
-            value:selectedAccounts.contains(account),
-            title: Text(account),
-            onChanged: (newValue) {
-              setState(() {
-                if (newValue == true) {
-                  selectedAccounts.add(account);
-                }
-                else {
-                  selectedAccounts.remove(account);
-                }
-              });
-            }
-        )).toList())
+  Widget accountList() => ListBody(
+    children: filteredAccounts().map((account) =>
+      ListTile(
+        dense: true,
+        selected: selectedAccount == account,
+        title: Text(account),
+        onTap: () {
+          Navigator.of(context).pop(account);
+        },
+      )).toList()
   );
 
   @override
   Widget build(BuildContext context) {
+    final pendingEntry = widget.pendingEntry;
+    filterFocusNode.requestFocus();
     return AlertDialog(
-        title:  Text('Accounts${selectedCount()}'),
-        content:  accountCheckboxList(),
+        title:  const Text('Accounts'),
+        content: Column(
+          children: [
+            if (pendingEntry != null) ...[
+              const Text('Destination account for transaction:'),
+              Text(pendingEntry.csvLine.description, style: const TextStyle(fontFamily: 'monospace'))
+            ],
+            TextField(
+              controller: filterEditingController,
+              onChanged: (newValue) => textFieldDelay.updateValue(newValue),
+              focusNode: filterFocusNode,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: accountList()
+              )
+            )
+          ]
+        ),
         actions: [
           ElevatedButton(onPressed: (){ Navigator.of(context).pop(null); }, child: const Text('Cancel')),
-          ElevatedButton(onPressed: (){ Navigator.of(context).pop(selectedAccounts); }, child: const Text('Ok'))
+          ElevatedButton(onPressed: selectedAccount.isEmpty ? null : (){ Navigator.of(context).pop(selectedAccount); }, child: const Text('Ok'))
         ],
     );
   }

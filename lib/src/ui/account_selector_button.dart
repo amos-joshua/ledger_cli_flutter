@@ -3,6 +3,7 @@ import 'package:ledger_cli/ledger_cli.dart';
 import '../ledger_session/ledger_session.dart';
 import 'account_selection_dialog.dart';
 
+/*
 class AccountSelectorButton extends StatefulWidget {
   final LedgerSession ledgerSession;
 
@@ -55,4 +56,4 @@ class _State extends State<AccountSelectorButton> {
         child: Text(queryAccounts.isEmpty ? 'All accounts' : queryAccounts.length == 1 ? queryAccounts.first : '${queryAccounts.length} accounts')
     );
   }
-}
+}*/

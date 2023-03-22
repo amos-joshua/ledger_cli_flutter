@@ -4,15 +4,16 @@ class QueryBadge extends StatelessWidget {
   final void Function()? onTap;
   final void Function()? onDelete;
   final Widget label;
+  final Color? backgroundColor;
 
-  const QueryBadge({required this.label, this.onTap, this.onDelete, super.key});
+  const QueryBadge({required this.label, this.onTap, this.onDelete, this.backgroundColor, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-          color: Theme.of(context).primaryColorLight,
+          color: backgroundColor ?? Theme.of(context).primaryColorLight,
         ),
         padding: const EdgeInsets.all(8.0),
         margin: const EdgeInsets.symmetric(horizontal: 5.0),

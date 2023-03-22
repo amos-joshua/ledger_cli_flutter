@@ -27,7 +27,10 @@ class _State extends State<ImportScreen> {
           )
         ],
       ),
-      body: PendingEntryList(pendingEntries: importSession.pendingEntries)
+      body: PendingEntryList(
+        pendingEntries: importSession.pendingEntries,
+        accountManager: importSession.accountManager
+      )
     );
   }
 
