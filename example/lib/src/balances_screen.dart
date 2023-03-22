@@ -13,6 +13,8 @@ import 'entries_tab_label.dart';
 import 'app_tab.dart';
 import 'import_screen.dart';
 import 'error_dialog.dart';
+import 'import_starter.dart';
+
 
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
@@ -37,7 +39,7 @@ class BalancesScreen extends StatefulWidget {
 }
 
 class _State extends State<BalancesScreen> with TickerProviderStateMixin {
-  static const csvDataLoader = CsvDataLoader();
+  //static const csvDataLoader = CsvDataLoader();
   final ledgerSession = LedgerSession(ledger: Ledger());
 
   final List<AppTab> tabs = [];
@@ -110,6 +112,16 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
           IconButton(
             icon: const Icon(Icons.move_to_inbox),
             onPressed: () {
+              final importStarter = ImportStarter();
+              importStarter.startImport(
+                  context,
+                  ledgerPreferences: widget.ledgerPreferences,
+                  accountManager: ledgerSession.ledger.accountManager
+              ).then((importSession) {
+                if (importSession == null) return;
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImportScreen(importSession: importSession, ledgerPreferences: widget.ledgerPreferences)));
+              });
+              /*
               final selectAccountDialog = ImportAccountDialog(context);
               selectAccountDialog.show(widget.ledgerPreferences.importAccounts).then((importAccount) {
                 if (importAccount == null) return;
@@ -129,7 +141,8 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                 }).catchError((err, stackTrace) {
                   ErrorDialog(context).show('Oops', 'Could not import file: $err\n\n$stackTrace');
                 });
-              });
+
+               */
             })
         ],
         bottom: TabBarContainer(
