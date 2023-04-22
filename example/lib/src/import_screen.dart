@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
+import 'dialogs/dialogs.dart';
 import 'import_starter.dart';
 
 class ImportScreen extends StatefulWidget {
@@ -13,7 +14,14 @@ class ImportScreen extends StatefulWidget {
 }
 
 class _State extends State<ImportScreen> {
+  static const pendingImportSerializer = PendingImportSerializer();
   ImportSession get importSession => widget.importSession;
+
+  Future<String> serializePendingEntries() async {
+    final pendingEntries = importSession.pendingEntries;
+    return pendingImportSerializer.serialize(pendingEntries);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +47,22 @@ class _State extends State<ImportScreen> {
           ElevatedButton(
             child: const Text('Save...'),
             onPressed: () {
-              print("DBG saving import!");
+              ConfirmDialog(context).show(
+                title: 'Save imports',
+                message: '${importSession.summary()}?'
+              ).then((confirmed) {
+                if (confirmed != true) return;
+                // TODO: save to ledger file (requires access to ledger file)
+                //importSession.saveTo()
+                serializePendingEntries().then((serialized) {
+
+                }).onError((error, stackTrace) {
+                  AlertMessageDialog(context).show(
+                    title: 'Oops',
+                    message: 'Error importing entries: $error\n$stackTrace'
+                  );
+                });
+              });
             },
           )
         ],

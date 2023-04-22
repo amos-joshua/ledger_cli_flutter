@@ -50,7 +50,7 @@ class _State extends State<PendingEntryList> {
         final decoration = pendingEntry.markedForDeletion ? TextDecoration.lineThrough : TextDecoration.none;
         final possibleAccounts = widget.accountManager.accounts.values.map((account) => account.name).toList(growable: false);
         return GestureDetector(
-          onDoubleTap: () {
+          onTap: () {
             AccountSelectionDialog.show(context,
               possibleAccounts: possibleAccounts,
               title: 'Account for',
