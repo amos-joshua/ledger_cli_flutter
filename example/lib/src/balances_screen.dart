@@ -14,6 +14,7 @@ import 'app_tab.dart';
 import 'import_screen.dart';
 import 'error_dialog.dart';
 import 'import_starter.dart';
+import 'dialogs/dialogs.dart';
 
 
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
@@ -110,6 +111,17 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
         title: const Text('Ledger'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () async {
+              final shouldReload = await ConfirmDialog(context).show(
+                  title: 'Reload data',
+                  message: 'Reload data from ledger "${widget.ledgerPreferences.defaultLedgerFile}"?'
+              );
+              if (shouldReload != true) return;
+              print("DBG reloading!");
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.move_to_inbox),
             onPressed: () {
               final importStarter = ImportStarter();
@@ -121,7 +133,8 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                 if (importSession == null) return;
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImportScreen(importSession: importSession, ledgerPreferences: widget.ledgerPreferences)));
               });
-            })
+            }
+          ),
         ],
         bottom: TabBarContainer(
           child: TabBar(
