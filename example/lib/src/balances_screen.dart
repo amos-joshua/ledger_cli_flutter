@@ -121,28 +121,6 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                 if (importSession == null) return;
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImportScreen(importSession: importSession, ledgerPreferences: widget.ledgerPreferences)));
               });
-              /*
-              final selectAccountDialog = ImportAccountDialog(context);
-              selectAccountDialog.show(widget.ledgerPreferences.importAccounts).then((importAccount) {
-                if (importAccount == null) return;
-                FilePicker.platform.pickFiles(initialDirectory: widget.ledgerPreferences.defaultCsvImportDirectory).then((result) {
-                  if (result == null) return Future.value();
-                  if (result.files.isEmpty) return Future.value();
-                  final importSession = ImportSession(accountManager: ledgerSession.ledger.accountManager);
-                  final csvFilePath = result.files.first.path;
-                  if (csvFilePath == null) {
-                    throw "No file chosen";
-                  }
-                  final csvLines = csvDataLoader.openStreamFromFile(csvFilePath, csvFormat: importAccount.csvFormat);
-                  return importSession.loadCsvLines(csvLines, importAccount: importAccount).then((placeholder) {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                        ImportScreen(importSession: importSession)));
-                  });
-                }).catchError((err, stackTrace) {
-                  ErrorDialog(context).show('Oops', 'Could not import file: $err\n\n$stackTrace');
-                });
-
-               */
             })
         ],
         bottom: TabBarContainer(

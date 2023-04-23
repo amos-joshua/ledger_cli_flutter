@@ -52,10 +52,13 @@ class _State extends State<ImportScreen> {
                 message: '${importSession.summary()}?'
               ).then((confirmed) {
                 if (confirmed != true) return;
-                // TODO: save to ledger file (requires access to ledger file)
-                //importSession.saveTo()
-                serializePendingEntries().then((serialized) {
-
+                importSession.saveTo(widget.ledgerPreferences.defaultLedgerFile).then((placeholder) {
+                  AlertMessageDialog(context).show(
+                    title: 'Import succeeded',
+                    message: ''
+                  ).then((placeholder) {
+                    Navigator.of(context).pop();
+                  });
                 }).onError((error, stackTrace) {
                   AlertMessageDialog(context).show(
                     title: 'Oops',

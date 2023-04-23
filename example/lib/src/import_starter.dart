@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 
-import 'import_screen.dart';
 import 'error_dialog.dart';
 class ImportStarter {
   static const csvDataLoader = CsvDataLoader();
