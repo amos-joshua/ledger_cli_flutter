@@ -14,12 +14,14 @@ class LedgerUpdateRequestPlaceholder extends LedgerUpdateRequest {
 }
 
 class LedgerUpdateRequestFromPath extends LedgerUpdateRequest {
+  final bool force;
   final String ledgerPath;
-  LedgerUpdateRequestFromPath(this.ledgerPath, {required super.execute});
+  LedgerUpdateRequestFromPath(this.ledgerPath, {required super.execute, this.force = false});
 
   @override
   bool staleFor(LedgerUpdateRequest nextUpdateRequest) {
     if (nextUpdateRequest is! LedgerUpdateRequestFromPath) return true;
+    if (nextUpdateRequest.force) return true;
     return nextUpdateRequest.ledgerPath != ledgerPath;
   }
 }

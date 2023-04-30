@@ -25,7 +25,6 @@ class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) => child;
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => const Size(double.maxFinite, 60.0);
 
 }
@@ -110,17 +109,21 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         title: const Text('Ledger'),
         actions: [
+          /*
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () async {
               final shouldReload = await ConfirmDialog(context).show(
                   title: 'Reload data',
-                  message: 'Reload data from ledger "${widget.ledgerPreferences.defaultLedgerFile}"?'
+                  message: 'Reload data from ledger "${widget.ledgerPath}"?'
               );
               if (shouldReload != true) return;
+              LedgerUpdateRequestFromPath(widget.ledgerPath);
+              ledgerSession.processUpdateRequest(updateRequest)
               print("DBG reloading!");
+              // TODO: add event channel (or find one) to ledger sessions, make it process update requests, make LedgerLoadingView listen to changes and update accoridngly
             },
-          ),
+          ),*/
           IconButton(
             icon: const Icon(Icons.move_to_inbox),
             onPressed: () {
@@ -165,7 +168,6 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
                 LedgerSessionContainer(
                 ledgerSession: ledgerSession,
                 child: LedgerLoadingView(
-                  key: ValueKey(widget.ledgerPath),
                   ledgerPath: widget.ledgerPath,
                   child: BalanceTab(
                     actionsBuilder: balancesActionsFor,
