@@ -12,7 +12,7 @@ import 'entries_list_tab.dart';
 import 'entries_tab_label.dart';
 import 'app_tab.dart';
 import 'import_screen.dart';
-import 'error_dialog.dart';
+import 'dialogs/error_dialog.dart';
 import 'import_starter.dart';
 import 'dialogs/dialogs.dart';
 
@@ -44,6 +44,11 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
 
   final List<AppTab> tabs = [];
 
+  @override
+  void initState() {
+    super.initState();
+    print("DBG init state balances screen for [${widget.ledgerPath}]");
+  }
 
   void showEntriesScreen(List<String> accounts, [DateRange? dateRange]) {
     setState(() {
@@ -163,19 +168,23 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
       body: Column(
           children: [
             Expanded(child:TabBarView(
+              key: ValueKey(widget.ledgerPath),
               controller: tabController,
               children: [
                 LedgerSessionContainer(
-                ledgerSession: ledgerSession,
-                child: LedgerLoadingView(
-                  ledgerPath: widget.ledgerPath,
-                  child: BalanceTab(
-                    actionsBuilder: balancesActionsFor,
-                    onAccountDoubleTap: (account) => showEntriesScreen([account]),
-                  ),
+                  key: ValueKey(ledgerSession),
+                  ledgerSession: ledgerSession,
+                  child: LedgerLoadingView(
+                    key: ValueKey(ledgerSession),
+                    ledgerPath: widget.ledgerPath,
+                    child: BalanceTab(
+                      actionsBuilder: balancesActionsFor,
+                      onAccountDoubleTap: (account) => showEntriesScreen([account]),
+                    ),
                   ),
                 ),
                 ...tabs.map((tab) => LedgerSessionContainer(
+                    key: ValueKey(tab.ledgerSession),
                     ledgerSession: tab.ledgerSession,
                     child:  tab.appTabType == AppTabType.transactions ? EntriesListTab(
                       ledgerSession: tab.ledgerSession,

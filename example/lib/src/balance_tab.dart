@@ -44,7 +44,7 @@ class _State extends State<BalanceTab> {
   @override
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
-    if (balanceResult == null) return const Center(child:CircularProgressIndicator());
+    if (balanceResult == null) return const Center(child: Text('Loading balance result...'));//CircularProgressIndicator());
     return Column(
         children: [
           Container(

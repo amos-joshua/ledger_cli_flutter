@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'src/select_a_file_screen.dart';
-import 'src/error_dialog.dart';
+import 'src/dialogs/error_dialog.dart';
+import 'src/ledger_loading_view.dart';
+import 'src/preferences_loading_view.dart';
+import 'src/app_scaffold.dart';
+import 'src/balances_screen.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Ledger CLI Explorer',
-      theme: ThemeData(primarySwatch: Colors.blue,),
-      home: LedgerPreferencesContainer(
-        ledgerPreferencesPath: 'ledger-preferences.json',
-        onError: (errorMessage) => ErrorDialog(context).show('Oops', errorMessage),
-        child:  const SelectAFileScreen()
+  runApp(
+    ProviderScope(
+      child: MaterialApp(
+        title: 'Ledger CLI Explorer',
+        theme: ThemeData(primarySwatch: Colors.blue,),
+        home: AppScaffold(
+          child: PreferencesLoadingView(
+            child: LedgerLoadingView(
+              child: BalancesScreen()
+            )
+          )
+        )
       )
-    );
-  }
+    )
+  );
 }

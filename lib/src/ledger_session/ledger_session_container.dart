@@ -14,6 +14,12 @@ class LedgerSessionContainer extends StatefulWidget {
 
 class LedgerSessionContainerState extends State<LedgerSessionContainer> {
   @override
+  void initState() {
+    super.initState();
+    print("DBG creating LedgerSessionContainer [key: ${widget.key}]");
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InheritedLedgerSessionContainer(
       ledgerSession: widget.ledgerSession,

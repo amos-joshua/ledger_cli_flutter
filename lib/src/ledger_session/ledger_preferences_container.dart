@@ -35,7 +35,8 @@ class LedgerPreferencesContainerState extends State<LedgerPreferencesContainer> 
   Future<void> loadPreferences() async {
     final preferencesFile = File(widget.ledgerPreferencesPath);
     try {
-      if (!await preferencesFile.exists()) throw Exception('Ledger preferences file "${widget.ledgerPreferencesPath}" does not exist');
+      final cwd = Directory.current.absolute;
+      if (!await preferencesFile.exists()) throw Exception('Ledger preferences file "${widget.ledgerPreferencesPath}" does not exist (cwd: [$cwd])');
       final preferencesData = await preferencesFile.readAsString();
       final loadedPreferences = ledgerPreferencesParser.parse(preferencesData);
       setState((){

@@ -12,3 +12,4 @@ export 'src/ledger_session/ledger_session_container.dart';
 export 'src/ledger_session/ledger_session.dart';
 export 'src/ledger_session/update_request.dart';
 export 'src/ledger_session/ledger_preferences_container.dart';
+export 'src/ledger_session/query_list.dart';

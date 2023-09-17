@@ -1,74 +1,32 @@
-import 'dart:io';
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ledger_cli/ledger_cli.dart';
+import 'providers.dart';
 
-class LedgerLoadingView extends StatefulWidget {
-  final String ledgerPath;
+class LedgerLoadingView extends ConsumerStatefulWidget {
   final Widget child;
 
-  const LedgerLoadingView({required this.ledgerPath, required this.child, super.key});
+  const LedgerLoadingView({required this.child, super.key});
 
   @override
-  State<StatefulWidget> createState() => _State();
+  ConsumerState<ConsumerStatefulWidget> createState() => _State();
 }
 
-class _State extends State<LedgerLoadingView> {
-  static const ledgerFileLoader = LedgerFileLoader();
-  late final Directory ledgerParent;
-  bool didLoad = false;
-  StreamSubscription? fileSystemSubscription;
-  DateTime? lastModifiedTimeLedger;
-
-  @override
-  void initState() {
-    super.initState();
-    ledgerParent = File(widget.ledgerPath).parent;
-    ledgerParent.watch();
-    fileSystemSubscription = ledgerParent.watch().listen(onFileSystemEvent);
-    reloadLedgerFile(force: false);
-  }
-
-  @override
-  void dispose() {
-    fileSystemSubscription?.cancel();
-    super.dispose();
-  }
-
-  void onFileSystemEvent(FileSystemEvent event) async {
-    final ledger = File(widget.ledgerPath);
-    final stat = await ledger.stat();
-    if (stat.modified != lastModifiedTimeLedger) {
-      lastModifiedTimeLedger = stat.modified;
-      reloadLedgerFile(force: true);
-    }
-  }
-
-  void reloadLedgerFile({required bool force}) {
-    final ledgerSession = LedgerSession.of(context);
-    final updateFromFile = LedgerUpdateRequestFromPath(widget.ledgerPath, execute: () {
-      ledgerFileLoader.load(widget.ledgerPath, onApplyFailure: (edit, exc, stackTrace) {
-        print("ERROR: could not apply $edit: $exc\n$stackTrace");
-      }).then((newLedger) {
-        setState(() {
-          ledgerSession.ledger.clear();
-          ledgerSession.ledger.loadFrom(newLedger);
-          didLoad = true;
-        });
-      });
-    }, force: force);
-    ledgerSession.processUpdateRequest(updateFromFile);
-    //didLoad = !ledgerSession.processUpdateRequest(updateFromFile);
-  }
+class _State extends ConsumerState<LedgerLoadingView> {
+  Widget loadingAnimation() => const Center(child: CircularProgressIndicator());
+  LedgerSource? lastLoadedSource;
 
   @override
   Widget build(BuildContext context) {
-    return didLoad ? widget.child :
-        const Center (
-          child: CircularProgressIndicator(),
-        );
-  }
+    final ledgerSource = ref.watch(providers.ledgerSource).value;
+    final appController = ref.watch(providers.appController);
+    final loading = ref.read(providers.ledgerLoading).value;
 
+    if ((ledgerSource != null) && (ledgerSource != lastLoadedSource)) {
+      lastLoadedSource = ledgerSource;
+      appController.loadLedger(ledgerSource);
+    }
+
+    return loading ? loadingAnimation() : ledgerSource == null ? SelectAFileScreen() : widget.child;
+  }
 }
