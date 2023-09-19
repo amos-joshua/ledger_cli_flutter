@@ -43,8 +43,12 @@ class AppController  {
     model.ledgerLoading.value = false;
   }
 
-  void addAccountTab(String account) {
-    final newQuery = Query()..accounts = [account];
+  void addAccountTab(List<String> accounts, {bool groupBy = false}) {
+    final newQuery = Query()..accounts = accounts;
+    if (groupBy) {
+      newQuery.groupBy = PeriodLength.month;
+      newQuery.startDate = DateTime(DateTime.now().year, 01, 01);
+    }
     model.tabQueries.add(newQuery);
   }
 }

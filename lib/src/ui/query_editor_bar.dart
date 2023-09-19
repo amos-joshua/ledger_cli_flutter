@@ -142,10 +142,8 @@ class _State extends State<QueryEditorBar> {
   }
 
   void handleSearchUpdate(String newSearchTerm) {
-    print("DBG search updated $newSearchTerm");
     var trimmedSearchTerm = newSearchTerm.trim();
     if (widget.searchFiltersAccounts) {
-      print("DBG filtering accounts");
       final lowercaseSearchTerm = trimmedSearchTerm.isEmpty ? 'assets' : trimmedSearchTerm.toLowerCase();
       accounts = widget.ledger.accountManager.accounts.keys.where((account) => account.toLowerCase().contains(lowercaseSearchTerm)).toList(growable: false);
     }

@@ -6,10 +6,6 @@ import 'controller/app_controller.dart';
 import 'model/model.dart';
 
 class BalanceTab extends StatefulWidget {
-
-  //final List<Widget> Function(BuildContext, String)? actionsBuilder;
-
-  //const BalanceTab({ this.actionsBuilder, super.key});
   const BalanceTab({super.key});
 
   @override
@@ -20,6 +16,7 @@ class _State extends State<BalanceTab> {
   static const queryExecutor = QueryExecutor();
   late final ValueNotifier<Query> query;
   late final Ledger ledger;
+  late final AppController appController;
   BalanceResult? balanceResult;
 
   @override
@@ -27,6 +24,7 @@ class _State extends State<BalanceTab> {
     super.initState();
     ledger = context.read<AppModel>().ledger;
     query = context.read<BalancesQueryAttr>();
+    appController = context.read<AppController>();
     loadBalances();
   }
 
@@ -48,6 +46,43 @@ class _State extends State<BalanceTab> {
   void dispose() {
     query.removeListener(loadBalances);
     super.dispose();
+  }
+
+  void showEntriesScreen(List<String> accounts, [DateRange? dateRange]) {
+    appController.addAccountTab(accounts);
+  }
+
+  void showEvolutionScreen(List<String> accounts) {
+    appController.addAccountTab(accounts, groupBy: true);
+
+    /*
+  }
+    setState(() {
+      final newTab = AppTab(
+          accounts: accounts,
+          ledgerSession:  LedgerSession(ledger: ledgerSession.ledger),
+          appTabType: AppTabType.evolution
+      );
+      tabs.add(newTab);
+      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(
+        accounts: accounts,
+      )..groupBy = PeriodLength.month
+        ..startDate = DateTime(DateTime.now().year, 01, 01);
+    });*/
+  }
+
+  List<Widget> balancesActionsFor(BuildContext context, String account) {
+    return [
+      IconButton(
+          onPressed: () => showEntriesScreen([account]),
+          icon: const Icon(Icons.list, color: Colors.black54),
+          tooltip: 'Transactions...'
+      ),
+      IconButton(
+          onPressed: () => showEvolutionScreen([account]),
+          icon: const Icon(Icons.trending_up, color: Colors.black54),
+          tooltip: 'Evolution...'),
+    ];
   }
 
   @override
@@ -73,10 +108,9 @@ class _State extends State<BalanceTab> {
                   key: ValueKey(balanceResult.hashCode),
                   balanceResult: balanceResult,
                   onDoubleTap: (account) {
-                    print("tapped account $account");
-                    appController.addAccountTab(account);
+                    appController.addAccountTab([account]);
                   },
-                  //actionsBuilder: widget.actionsBuilder
+                  actionsBuilder: balancesActionsFor
               )
           )
         ]

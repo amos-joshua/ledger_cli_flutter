@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
-import 'controller/app_controller.dart';
-import 'model/model.dart';
+import 'entries_list_tab.dart';
+import 'evolutions_tab.dart';
 import 'balances_screen.dart';
 
 class AppTabView extends StatefulWidget {
@@ -23,7 +23,11 @@ class _State extends State<AppTabView> with TickerProviderStateMixin {
         controller: widget.tabController,
         children: [
           const BalancesScreen(),
-          ...tabQueries.map((tab) => Center(child: Text(tab.accounts.join(' '))))
+          ...tabQueries.map((tabQuery) => //Center(child: Text(tab.accounts.join(' '))))
+            tabQuery.groupBy == null ?
+            EntriesListTab(query: tabQuery) :
+            EvolutionsTab(query: tabQuery)
+          )
         ]
     );
   }
