@@ -49,9 +49,7 @@ class _State extends State<EntriesListTab> {
       children: [
         Container(
           color: Theme.of(context).primaryColor,
-          child: const QueryEditorBar(
-
-          ),
+          child: Text('REPLACE ME QUERY EDITOR'),
         ),
         Expanded(
           child: LedgerEntryList(entries: filteredEntries)

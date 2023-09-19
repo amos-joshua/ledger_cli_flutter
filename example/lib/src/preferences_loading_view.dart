@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers.dart';
+import 'package:provider/provider.dart';
+import 'controller/app_controller.dart';
+import 'model/model.dart';
 
-class PreferencesLoadingView extends ConsumerStatefulWidget {
+
+class PreferencesLoadingView extends StatefulWidget {
   final Widget child;
   const PreferencesLoadingView({required this.child, super.key});
 
   @override
-  ConsumerState createState() => _State();
+  State createState() => _State();
 }
 
-class _State extends ConsumerState<PreferencesLoadingView> {
+class _State extends State<PreferencesLoadingView> {
   bool didTryLoadingPreferences = false;
 
   @override
   void initState() {
     super.initState();
-    final appController = ref.read(providers.appController);
+    final appController = context.read<AppController>();
     if (!didTryLoadingPreferences) {
       appController.loadPreferences('ledger-preferences.json');
       setState(() {
@@ -25,11 +27,13 @@ class _State extends ConsumerState<PreferencesLoadingView> {
     }
   }
 
-  Widget loadingAnimation() => const Center(child: CircularProgressIndicator());
+  Widget loadingAnimation() => const Center(
+      child: Text('Preferences loading')//CircularProgressIndicator()
+  );
 
   @override
   Widget build(BuildContext context) {
-    final loading = ref.read(providers.preferencesLoading).value;
+    final loading = context.watch<PreferencesLoadingAttr>().value;
     return loading ? loadingAnimation() : widget.child;
   }
 }

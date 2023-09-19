@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:example/src/evolutions_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'controller/app_controller.dart';
+import 'model/model.dart';
 import 'ledger_loading_view.dart';
 import 'balance_tab.dart';
 import 'entries_list_tab.dart';
@@ -17,6 +20,15 @@ import 'import_starter.dart';
 import 'dialogs/dialogs.dart';
 
 
+class BalancesScreen extends StatelessWidget {
+  const BalancesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const BalanceTab();
+  }
+}
+/*
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
   const TabBarContainer({super.key, required this.child});
@@ -201,4 +213,4 @@ class _State extends State<BalancesScreen> with TickerProviderStateMixin {
       )
     );
   }
-}
+}*/

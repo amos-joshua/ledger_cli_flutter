@@ -8,8 +8,8 @@ enum  AppTabType {
 
 class AppTab {
   final List<String> accounts;
-  final LedgerSession ledgerSession;
+ // final LedgerSession ledgerSession;
   final AppTabType appTabType;
-  AppTab({required this.accounts, required this.ledgerSession, required this.appTabType});
+  AppTab({required this.accounts, /*required this.ledgerSession,*/ required this.appTabType});
 
 }

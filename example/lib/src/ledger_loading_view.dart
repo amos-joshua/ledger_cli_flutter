@@ -1,32 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 import 'package:ledger_cli/ledger_cli.dart';
-import 'providers.dart';
+import 'model/model.dart';
+import 'controller/app_controller.dart';
+import 'select_a_file_screen.dart';
 
-class LedgerLoadingView extends ConsumerStatefulWidget {
+class LedgerLoadingView extends StatefulWidget {
   final Widget child;
-
   const LedgerLoadingView({required this.child, super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _State();
+  State createState() => _State();
 }
 
-class _State extends ConsumerState<LedgerLoadingView> {
-  Widget loadingAnimation() => const Center(child: CircularProgressIndicator());
+class _State extends State<LedgerLoadingView> {
+  Widget loadingAnimation() => const Center(
+      child: Text('ledger loading')//CircularProgressIndicator()
+  );
   LedgerSource? lastLoadedSource;
+
 
   @override
   Widget build(BuildContext context) {
-    final ledgerSource = ref.watch(providers.ledgerSource).value;
-    final appController = ref.watch(providers.appController);
-    final loading = ref.read(providers.ledgerLoading).value;
-
+    final ledgerSource = context.watch<LedgerSourceAttr>().value;
+    final appController = context.read<AppController>();
+    final loading = context.watch<LedgerLoadingAttr>().value;
     if ((ledgerSource != null) && (ledgerSource != lastLoadedSource)) {
       lastLoadedSource = ledgerSource;
-      appController.loadLedger(ledgerSource);
+      Future.delayed(const Duration(milliseconds: 30), () {
+        // Note: delay loading the ledger, to avoid modifying state variables during build
+        appController.loadLedger(ledgerSource);
+      });
     }
-
-    return loading ? loadingAnimation() : ledgerSource == null ? SelectAFileScreen() : widget.child;
+    return loading ? loadingAnimation() : ledgerSource == null ? const SelectAFileScreen() : widget.child;
   }
 }

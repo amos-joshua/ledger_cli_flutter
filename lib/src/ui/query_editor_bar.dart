@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
-import '../ledger_session/ledger_session.dart';
 import 'query_editor_bar/filter_selection_popup.dart';
 import 'query_editor_bar/search_field.dart';
 import 'query_editor_bar/query_badge.dart';
@@ -10,7 +9,11 @@ class QueryEditorBar extends StatefulWidget {
   final bool searchFiltersAccounts;
   final bool allowGroupedBy;
   final bool allowStartDate;
-  const QueryEditorBar({this.searchFiltersAccounts = false, this.allowGroupedBy = false, this.allowStartDate = true, super.key});
+  final ValueNotifier<Query> query;
+  final Ledger ledger;
+
+
+  const QueryEditorBar({required this.query, required this.ledger, this.searchFiltersAccounts = false, this.allowGroupedBy = false, this.allowStartDate = true, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -18,41 +21,39 @@ class QueryEditorBar extends StatefulWidget {
 
 class _State extends State<QueryEditorBar> {
   static const ledgerDateFormatter = LedgerDateFormatter();
-  late final LedgerSession ledgerSession;
   final searchController = TextEditingController();
 
-  Query get query => ledgerSession.query.value;
+  ValueNotifier<Query> get query => widget.query;
 
-  DateTime? get startDate => ledgerSession.query.value.startDate;
+  DateTime? get startDate => query.value.startDate;
   set startDate(DateTime? newDate) {
-    ledgerSession.query.value = query.modify()..startDate = newDate;
+    query.value = query.value.modify()..startDate = newDate;
   }
 
-  DateTime? get endDate => ledgerSession.query.value.startDate;
+  DateTime? get endDate => query.value.startDate;
   set endDate(DateTime? newDate) {
-    ledgerSession.query.value = query.modify()..endDate = newDate;
+    query.value = query.value.modify()..endDate = newDate;
   }
 
-  List<String> get accounts => ledgerSession.query.value.accounts;
+  List<String> get accounts => query.value.accounts;
   set accounts(List<String> newAccounts) {
-    ledgerSession.query.value = query.modify(accounts: newAccounts);
+    query.value = query.value.modify(accounts: newAccounts);
   }
 
-  String get searchTerm => ledgerSession.query.value.searchTerm;
+  String get searchTerm => query.value.searchTerm;
   set searchTerm(String newSearchTerm) {
-    ledgerSession.query.value = query.modify(searchTerm: newSearchTerm);
+    query.value = query.value.modify(searchTerm: newSearchTerm);
   }
 
-  PeriodLength? get groupBy => ledgerSession.query.value.groupBy;
+  PeriodLength? get groupBy => query.value.groupBy;
   set groupBy(PeriodLength? newGroupBy) {
-    ledgerSession.query.value = query.modify()..groupBy = newGroupBy;
+    query.value = query.value.modify()..groupBy = newGroupBy;
   }
 
   @override
   void initState() {
     super.initState();
-    ledgerSession = LedgerSession.of(context);
-    searchController.text = query.searchTerm;
+    searchController.text = query.value.searchTerm;
   }
 
   String dateOrNone(DateTime? date) => date == null ? 'None' : ledgerDateFormatter.format(date);
@@ -141,10 +142,12 @@ class _State extends State<QueryEditorBar> {
   }
 
   void handleSearchUpdate(String newSearchTerm) {
+    print("DBG search updated $newSearchTerm");
     var trimmedSearchTerm = newSearchTerm.trim();
     if (widget.searchFiltersAccounts) {
+      print("DBG filtering accounts");
       final lowercaseSearchTerm = trimmedSearchTerm.isEmpty ? 'assets' : trimmedSearchTerm.toLowerCase();
-      accounts = ledgerSession.ledger.accountManager.accounts.keys.where((account) => account.toLowerCase().contains(lowercaseSearchTerm)).toList(growable: false);
+      accounts = widget.ledger.accountManager.accounts.keys.where((account) => account.toLowerCase().contains(lowercaseSearchTerm)).toList(growable: false);
     }
     else {
       searchTerm = trimmedSearchTerm;
@@ -172,7 +175,7 @@ class _State extends State<QueryEditorBar> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     return ValueListenableBuilder(
-        valueListenable: ledgerSession.query,
+        valueListenable: query,
         builder: (context, query, tree) {
           final queryStartDate = query.startDate;
           final queryEndDate = query.endDate;

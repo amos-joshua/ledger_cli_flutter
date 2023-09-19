@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
+import 'attributes.dart';
 
 class AppModel {
-
-  var preferencesLoading = ValueNotifier(false);
+  final preferencesLoading = PreferencesLoadingAttr(false);
   var ledgerPreferences = LedgerPreferences.empty;
 
-  var ledgerSource = ValueNotifier<LedgerSource?>(null);
-  var ledgerLoading = ValueNotifier(false);
+  var ledgerSource = LedgerSourceAttr(null);
+  var ledgerLoading = LedgerLoadingAttr(false);
   var ledger = Ledger();
 
-  var balancesQuery = ValueNotifier(Query());
+  var balancesQuery = BalancesQueryAttr(Query());
 
   final tabQueries = QueryList();
 

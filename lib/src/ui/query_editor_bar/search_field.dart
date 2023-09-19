@@ -29,7 +29,7 @@ class SearchField extends StatelessWidget {
                   )
               ),
               controller: textEditingController,
-              onChanged: (newValue) => searchDelay.updateValue(newValue),
+              onChanged: (newValue) { searchDelay.updateValue(newValue); print("DBG changed $newValue"); }
             )
         )
     );

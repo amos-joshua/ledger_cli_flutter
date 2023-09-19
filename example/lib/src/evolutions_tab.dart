@@ -47,9 +47,9 @@ class _State extends State<EvolutionsTab> {
         children: [
           Container(
             color: Theme.of(context).primaryColor,
-            child: const QueryEditorBar(
+            child: Text('REPLACE ME QUERY EDITOR')/*const QueryEditorBar(
               allowGroupedBy: true,
-            ),
+            ),*/
           ),
           Expanded(
               child: EvolutionsTable(

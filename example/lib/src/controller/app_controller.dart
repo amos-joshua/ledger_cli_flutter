@@ -15,10 +15,12 @@ class AppController  {
   Stream<UserFacingError> get errorStream => _errorStreamController.stream;
   final model = AppModel();
 
-  void loadPreferences(String path) async {
+  Future<void> loadPreferences(String path) async {
     model.preferencesLoading.value = true;
     try {
-      model.ledgerPreferences = await ledgerPreferencesLoader.loadFromPath(path);
+      final preferences = await ledgerPreferencesLoader.loadFromPath(path);
+      model.ledgerPreferences = preferences;
+      model.ledgerSource.value = LedgerSource.forFile(preferences.defaultLedgerFile);
     }
     catch (exc, stackTrace) {
       _errorStreamController.add(UserFacingError(message: 'Error loading ledger preferences: $exc', stackTrace: stackTrace));
@@ -30,7 +32,8 @@ class AppController  {
     model.ledgerLoading.value = true;
     try {
       model.ledger = await ledgerLoader.load(source, onApplyFailure: (edit, exc, stackTrace) {
-        print("ERROR: could not apply $edit: $exc\n$stackTrace");
+        //print("ERROR: could not apply $edit: $exc\n$stackTrace");
+        // TODO: file away in model error log
       });
       ledgerSourceWatcher.watch(source);
     }
