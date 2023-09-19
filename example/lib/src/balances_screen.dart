@@ -29,17 +29,7 @@ class BalancesScreen extends StatelessWidget {
   }
 }
 /*
-class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
-  final Widget child;
-  const TabBarContainer({super.key, required this.child});
 
-  @override
-  Widget build(BuildContext context) => child;
-
-  @override
-  Size get preferredSize => const Size(double.maxFinite, 60.0);
-
-}
 
 class BalancesScreen extends StatefulWidget {
   final LedgerPreferences ledgerPreferences;

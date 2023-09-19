@@ -28,7 +28,7 @@ class AppController  {
     model.preferencesLoading.value = false;
   }
 
-  void loadLedger(LedgerSource source) async {
+  Future<void> loadLedger(LedgerSource source) async {
     model.ledgerLoading.value = true;
     try {
       model.ledger = await ledgerLoader.load(source, onApplyFailure: (edit, exc, stackTrace) {
@@ -41,5 +41,10 @@ class AppController  {
       _errorStreamController.add(UserFacingError(message: 'Error loading ledger from $source: $exc', stackTrace: stackTrace));
     }
     model.ledgerLoading.value = false;
+  }
+
+  void addAccountTab(String account) {
+    final newQuery = Query()..accounts = [account];
+    model.tabQueries.add(newQuery);
   }
 }

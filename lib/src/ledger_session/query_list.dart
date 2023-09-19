@@ -16,4 +16,8 @@ class QueryList extends ChangeNotifier {
 
   Query queryAt(int index) => _items[index];
   int get length => _items.length;
+
+  Map<int, Query> asMap() => _items.asMap();
+
+  Iterable<T> map<T>(T Function(Query) func) => _items.map((query) => func(query));
 }

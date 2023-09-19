@@ -27,7 +27,7 @@ class _State extends State<LedgerLoadingView> {
     final loading = context.watch<LedgerLoadingAttr>().value;
     if ((ledgerSource != null) && (ledgerSource != lastLoadedSource)) {
       lastLoadedSource = ledgerSource;
-      Future.delayed(const Duration(milliseconds: 30), () {
+      Future.delayed(const Duration(milliseconds: 80), () {
         // Note: delay loading the ledger, to avoid modifying state variables during build
         appController.loadLedger(ledgerSource);
       });

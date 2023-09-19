@@ -7,10 +7,9 @@ import 'model/model.dart';
 
 class BalanceTab extends StatefulWidget {
 
-  //final void Function(String) onAccountDoubleTap;
   //final List<Widget> Function(BuildContext, String)? actionsBuilder;
 
-  //const BalanceTab({required this.onAccountDoubleTap, this.actionsBuilder, super.key});
+  //const BalanceTab({ this.actionsBuilder, super.key});
   const BalanceTab({super.key});
 
   @override
@@ -19,18 +18,19 @@ class BalanceTab extends StatefulWidget {
 
 class _State extends State<BalanceTab> {
   static const queryExecutor = QueryExecutor();
+  late final ValueNotifier<Query> query;
+  late final Ledger ledger;
   BalanceResult? balanceResult;
 
   @override
   void initState() {
     super.initState();
+    ledger = context.read<AppModel>().ledger;
+    query = context.read<BalancesQueryAttr>();
     loadBalances();
   }
 
   Future<void> loadBalances() async {
-    final ledger = context.read<AppModel>().ledger;
-    final query = context.read<BalancesQueryAttr>();
-
     try {
       final balanceResult = queryExecutor.queryBalance(ledger, query.value);
       setState(() {
@@ -46,15 +46,13 @@ class _State extends State<BalanceTab> {
 
   @override
   void dispose() {
-    final query = context.read<BalancesQueryAttr>();
     query.removeListener(loadBalances);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final ledger = context.read<AppModel>().ledger;
-    final query = context.watch<BalancesQueryAttr>();
+    final appController = context.read<AppController>();
 
     final balanceResult = this.balanceResult;
     if (balanceResult == null) return const Center(child: CircularProgressIndicator());
@@ -75,9 +73,9 @@ class _State extends State<BalanceTab> {
                   key: ValueKey(balanceResult.hashCode),
                   balanceResult: balanceResult,
                   onDoubleTap: (account) {
-                    print("current query: ${query.value}");
+                    print("tapped account $account");
+                    appController.addAccountTab(account);
                   },
-                  //onDoubleTap: widget.onAccountDoubleTap,
                   //actionsBuilder: widget.actionsBuilder
               )
           )

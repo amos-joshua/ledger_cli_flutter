@@ -11,15 +11,9 @@ void main() {
     DependenciesProvider(
       appController: AppController(),
       child: MaterialApp(
-        title: 'Ledger CLI Explorer',
-        theme: ThemeData(primarySwatch: Colors.green),
-        home: const AppScaffold(
-          child: PreferencesLoadingView(
-            child: LedgerLoadingView(
-              child: BalancesScreen()
-            )
-          )
-        )
+          title: 'Ledger CLI Explorer',
+          theme: ThemeData(primarySwatch: Colors.green),
+          home: const AppScaffold()
       )
     )
   );
