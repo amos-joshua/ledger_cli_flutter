@@ -7,11 +7,11 @@ import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'controller/app_controller.dart';
 import 'dialogs/dialogs.dart';
 import 'model/model.dart';
-import 'tab_bar.dart';
+import 'app_tab_bar.dart';
 import 'preferences_loading_view.dart';
 import 'ledger_loading_view.dart';
 import 'balances_screen.dart';
-import 'tab_view.dart';
+import 'app_tab_view.dart';
 
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;

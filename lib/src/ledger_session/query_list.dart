@@ -2,10 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 
 class QueryList extends ChangeNotifier {
-  final _items = <Query>[];
+  final _items = <ValueNotifier<Query>>[];
 
   void add(Query query) {
-    _items.add(query);
+    _items.add(ValueNotifier(query));
     notifyListeners();
   }
 
@@ -14,10 +14,10 @@ class QueryList extends ChangeNotifier {
     notifyListeners();
   }
 
-  Query queryAt(int index) => _items[index];
+  ValueNotifier<Query> queryAt(int index) => _items[index];
   int get length => _items.length;
 
-  Map<int, Query> asMap() => _items.asMap();
+  Map<int, ValueNotifier<Query>> asMap() => _items.asMap();
 
-  Iterable<T> map<T>(T Function(Query) func) => _items.map((query) => func(query));
+  Iterable<T> map<T>(T Function(ValueNotifier<Query>) func) => _items.map((query) => func(query));
 }

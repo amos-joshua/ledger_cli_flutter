@@ -43,11 +43,15 @@ class AppController  {
     model.ledgerLoading.value = false;
   }
 
-  void addAccountTab(List<String> accounts, {bool groupBy = false}) {
+  void addAccountTab(List<String> accounts, {bool groupBy = false, DateRange? dateRange}) {
     final newQuery = Query()..accounts = accounts;
     if (groupBy) {
       newQuery.groupBy = PeriodLength.month;
       newQuery.startDate = DateTime(DateTime.now().year, 01, 01);
+    }
+    if (dateRange != null) {
+      newQuery.startDate = dateRange.startDateInclusive;
+      newQuery.endDate = dateRange.endDateInclusive;
     }
     model.tabQueries.add(newQuery);
   }

@@ -5,7 +5,7 @@ import 'package:ledger_cli/ledger_cli.dart';
 import 'model/model.dart';
 
 class EntriesListTab extends StatefulWidget {
-  final Query query;
+  final ValueNotifier<Query> query;
   const EntriesListTab({required this.query, super.key});
 
   @override
@@ -16,7 +16,7 @@ class _State extends State<EntriesListTab> {
   static const queryExecutor = QueryExecutor();
   final List<Entry> filteredEntries = [];
   late final Ledger ledger;
-  late final ValueNotifier<Query> query = ValueNotifier(widget.query);
+  ValueNotifier<Query> get query => widget.query;
 
   @override
   void initState() {
@@ -49,19 +49,8 @@ class _State extends State<EntriesListTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          color: Theme.of(context).primaryColor,
-          child: QueryEditorBar(
-            query: query,
-            ledger: ledger
-          )
-        ),
-        Expanded(
-          child: LedgerEntryList(entries: filteredEntries)
-        )
-      ]
+    return LedgerEntryList(
+        entries: filteredEntries,
     );
   }
 

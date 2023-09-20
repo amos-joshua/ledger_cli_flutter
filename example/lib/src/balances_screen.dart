@@ -19,7 +19,7 @@ import 'dialogs/error_dialog.dart';
 import 'import_starter.dart';
 import 'dialogs/dialogs.dart';
 
-
+/*
 class BalancesScreen extends StatelessWidget {
   const BalancesScreen({super.key});
 
@@ -27,7 +27,7 @@ class BalancesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const BalanceTab();
   }
-}
+}*/
 /*
 
 

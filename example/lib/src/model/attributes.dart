@@ -17,3 +17,6 @@ class BalancesQueryAttr extends ValueNotifier<Query> {
   BalancesQueryAttr(super.value);
 }
 
+class SelectedTabIndexAttr extends ValueNotifier<int> {
+  SelectedTabIndexAttr(super.value);
+}

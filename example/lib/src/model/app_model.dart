@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'attributes.dart';
@@ -14,6 +13,6 @@ class AppModel {
   var balancesQuery = BalancesQueryAttr(Query());
 
   final tabQueries = QueryList();
-
+  final selectedTabIndex = SelectedTabIndexAttr(0);
 
 }

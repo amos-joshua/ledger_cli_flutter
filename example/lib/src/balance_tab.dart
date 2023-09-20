@@ -54,21 +54,6 @@ class _State extends State<BalanceTab> {
 
   void showEvolutionScreen(List<String> accounts) {
     appController.addAccountTab(accounts, groupBy: true);
-
-    /*
-  }
-    setState(() {
-      final newTab = AppTab(
-          accounts: accounts,
-          ledgerSession:  LedgerSession(ledger: ledgerSession.ledger),
-          appTabType: AppTabType.evolution
-      );
-      tabs.add(newTab);
-      newTab.ledgerSession.query.value = newTab.ledgerSession.query.value.modify(
-        accounts: accounts,
-      )..groupBy = PeriodLength.month
-        ..startDate = DateTime(DateTime.now().year, 01, 01);
-    });*/
   }
 
   List<Widget> balancesActionsFor(BuildContext context, String account) {
@@ -91,31 +76,14 @@ class _State extends State<BalanceTab> {
 
     final balanceResult = this.balanceResult;
     if (balanceResult == null) return const Center(child: CircularProgressIndicator());
-    return Column(
-        children: [
-          Container(
-            color: Theme.of(context).primaryColor,
-            child: QueryEditorBar(
-              ledger: ledger,
-              query: query,
-              searchFiltersAccounts: true,
-              allowStartDate: false,
-              allowGroupedBy: false,
-            ),
-          ),
-          Expanded(
-              child: BalanceTable(
-                  key: ValueKey(balanceResult.hashCode),
-                  balanceResult: balanceResult,
-                  onDoubleTap: (account) {
-                    appController.addAccountTab([account]);
-                  },
-                  actionsBuilder: balancesActionsFor
-              )
-          )
-        ]
+    return BalanceTable(
+        key: ValueKey(balanceResult.hashCode),
+        balanceResult: balanceResult,
+        onDoubleTap: (account) {
+          appController.addAccountTab([account]);
+        },
+        actionsBuilder: balancesActionsFor
     );
-
   }
 
 }

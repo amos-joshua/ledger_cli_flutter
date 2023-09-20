@@ -18,7 +18,8 @@ class DependenciesProvider extends StatelessWidget {
           ChangeNotifierProvider.value(value: appController.model.ledgerLoading),
           ChangeNotifierProvider.value(value: appController.model.ledgerSource),
           ChangeNotifierProvider.value(value: appController.model.balancesQuery),
-          ChangeNotifierProvider.value(value: appController.model.tabQueries)
+          ChangeNotifierProvider.value(value: appController.model.tabQueries),
+          ChangeNotifierProvider.value(value: appController.model.selectedTabIndex)
         ],
       child: child,
     );

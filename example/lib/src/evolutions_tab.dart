@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'package:ledger_cli/ledger_cli.dart';
+import 'controller/app_controller.dart';
 import 'model/model.dart';
 
 class EvolutionsTab extends StatefulWidget {
-  final Query query;
+  final ValueNotifier<Query> query;
 
-  final List<Widget> Function(BuildContext, String, DateRange?)? actionsBuilder;
-
-  const EvolutionsTab({required this.query, this.actionsBuilder, super.key});
+  const EvolutionsTab({required this.query, super.key});
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -18,13 +17,15 @@ class EvolutionsTab extends StatefulWidget {
 class _State extends State<EvolutionsTab> {
   static const queryExecutor = QueryExecutor();
   late final Ledger ledger;
-  late final ValueNotifier<Query> query = ValueNotifier(widget.query);
+  late final AppController appController;
+  ValueNotifier<Query> get query => widget.query;
   BalanceResult? balanceResult;
 
   @override
   void initState() {
     super.initState();
     ledger = context.read<AppModel>().ledger;
+    appController = context.read<AppController>();
 
     loadBalances();
     query.addListener(loadBalances);
@@ -34,6 +35,16 @@ class _State extends State<EvolutionsTab> {
   void dispose() {
     query.removeListener(loadBalances);
     super.dispose();
+  }
+
+  List<Widget> evolutionsActionSFor(BuildContext context, String account, DateRange? dateRange) {
+    return [
+      IconButton(
+          icon: const Icon(Icons.list, color: Colors.black54),
+          onPressed: () => appController.addAccountTab([account], dateRange: dateRange),
+          tooltip: 'Transactions...'
+      ),
+    ];
   }
 
   loadBalances() {
@@ -50,24 +61,10 @@ class _State extends State<EvolutionsTab> {
   Widget build(BuildContext context) {
     final balanceResult = this.balanceResult;
     if (balanceResult == null) return const Center(child:CircularProgressIndicator());
-    return Column(
-        children: [
-          Container(
-            color: Theme.of(context).primaryColor,
-            child: QueryEditorBar(
-              ledger: ledger,
-              query: query,
-              allowGroupedBy: true,
-            ),
-          ),
-          Expanded(
-              child: EvolutionsTable(
-                key: ValueKey(balanceResult.hashCode),
-                actionsBuilder: widget.actionsBuilder,
-                balanceResult: balanceResult,
-              )
-          )
-        ]
+    return EvolutionsTable(
+      key: ValueKey(balanceResult.hashCode),
+      actionsBuilder: evolutionsActionSFor,
+      balanceResult: balanceResult,
     );
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'model/model.dart';
 
 class EntriesTabLabel extends StatefulWidget {
   final int index;
@@ -14,9 +16,12 @@ class EntriesTabLabel extends StatefulWidget {
 }
 
 class _State extends State<EntriesTabLabel> {
+  late final AppModel model;
+
   @override
   void initState() {
     super.initState();
+    model = context.read<AppModel>();
     widget.tabController.addListener(onTabChanged);
   }
 
@@ -27,6 +32,7 @@ class _State extends State<EntriesTabLabel> {
   }
 
   void onTabChanged() {
+    model.selectedTabIndex.value = widget.tabController.index;
     setState(() {
       // pass
     });
