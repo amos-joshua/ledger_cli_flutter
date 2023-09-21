@@ -54,5 +54,6 @@ class AppController  {
       newQuery.endDate = dateRange.endDateInclusive;
     }
     model.tabQueries.add(newQuery);
+    model.selectedTabIndex.value = model.tabQueries.length;
   }
 }

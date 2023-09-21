@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,9 +42,9 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    final appController = context.read<AppController>();
+    appController = context.read<AppController>();
     errorStreamSubscription = appController.errorStream.listen((error) {
-      print('App scaffold ERROR: ${error.message}\n${error.stackTrace}');
+      //print('App scaffold ERROR: ${error.message}\n${error.stackTrace}');
       AlertMessageDialog(context).show(
         title: 'Error',
         message: error.message
@@ -67,9 +68,9 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
         title: const Text('Ledger'),
         bottom: AppTabBar(tabController: tabController),
         actions: [
-          // TODO: work on importing data
           IconButton(
             icon: const Icon(Icons.move_to_inbox),
+            tooltip: 'Import',
             onPressed: () {
               final importStarter = ImportStarter();
               importStarter.startImport(
@@ -82,6 +83,15 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
               });
             }
           ),
+          IconButton(
+            icon: const Icon(Icons.folder),
+            tooltip: 'Open',
+            onPressed: () {
+              SelectLedgerFileDialog(context).show(initialDirectory: File(model.ledgerPreferences.defaultLedgerFile).parent.path).then((source) {
+                if (source != null) appController.loadLedger(source);
+              });
+            },
+          )
         ],
       ),
       body: PreferencesLoadingView(

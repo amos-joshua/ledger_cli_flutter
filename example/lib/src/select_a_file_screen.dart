@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:ledger_cli/ledger_cli.dart';
 
-import 'dialogs/alert.dart';
+import 'dialogs/dialogs.dart';
 import 'model/model.dart';
 import 'controller/app_controller.dart';
 
@@ -13,8 +11,13 @@ class SelectAFileScreen extends StatelessWidget {
 
   void onSelectFileTapped(BuildContext context) {
     final appController = context.read<AppController>();
-
     final preferences = context.read<AppModel>().ledgerPreferences;
+    SelectLedgerFileDialog(context).show(initialDirectory: File(preferences.defaultLedgerFile).parent.path).then((source) {
+      if (source != null) {
+        appController.loadLedger(source);
+      }
+    });
+    /*
     FilePicker.platform.pickFiles(initialDirectory: File(preferences.defaultLedgerFile).parent.path).then((result) {
       if (result == null) return;
       final ledgerPath = result.files.single.path;
@@ -24,7 +27,7 @@ class SelectAFileScreen extends StatelessWidget {
       }
       final source = LedgerSource.forFile(ledgerPath);
       appController.loadLedger(source);
-    });
+    });*/
   }
 
   @override
