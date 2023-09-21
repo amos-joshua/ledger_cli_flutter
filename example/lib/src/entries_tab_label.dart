@@ -43,15 +43,19 @@ class _State extends State<EntriesTabLabel> {
     final isSelected = widget.tabController.index == widget.index;
     final icon = widget.icon;
     return Tab(
-      child: ListTile(
-        leading: icon == null ? null : Icon(icon, color: isSelected ? Colors.white : Colors.white54),
-        dense: true,
-        visualDensity: VisualDensity.compact,
-        title: Text(widget.label, style: isSelected ? const TextStyle(color: Colors.white, fontWeight: FontWeight.bold) : const TextStyle(color: Colors.white54)),
-        trailing: IconButton(
-          icon: const Icon(Icons.cancel),
-          onPressed: widget.onDelete
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Icon(icon, color: isSelected ? Colors.white : Colors.white54)
+          ),
+          Text(widget.label, style: isSelected ? const TextStyle(color: Colors.white, fontWeight: FontWeight.bold) : const TextStyle(color: Colors.white54)),
+          IconButton(
+              icon: const Icon(Icons.close, size: 16,),
+              onPressed: widget.onDelete
+          ),
+        ],
       )
     );
   }

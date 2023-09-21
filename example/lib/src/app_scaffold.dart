@@ -6,12 +6,13 @@ import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 
 import 'controller/app_controller.dart';
 import 'dialogs/dialogs.dart';
-import 'model/model.dart';
 import 'app_tab_bar.dart';
+import 'import_screen.dart';
+import 'import_starter.dart';
 import 'preferences_loading_view.dart';
 import 'ledger_loading_view.dart';
-import 'balances_screen.dart';
 import 'app_tab_view.dart';
+import 'model/model.dart';
 
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
@@ -52,7 +53,7 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
+    final model = context.read<AppModel>();
     final tabQueries = context.watch<QueryList>();
 
     final tabController = TabController(
@@ -65,6 +66,23 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
       appBar: AppBar(
         title: const Text('Ledger'),
         bottom: AppTabBar(tabController: tabController),
+        actions: [
+          // TODO: work on importing data
+          IconButton(
+            icon: const Icon(Icons.move_to_inbox),
+            onPressed: () {
+              final importStarter = ImportStarter();
+              importStarter.startImport(
+                  context,
+                  ledgerPreferences: model.ledgerPreferences,
+                  accountManager: model.ledger.accountManager
+              ).then((importSession) {
+                if (importSession == null) return;
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImportScreen(importSession: importSession, ledgerPreferences: model.ledgerPreferences)));
+              });
+            }
+          ),
+        ],
       ),
       body: PreferencesLoadingView(
           child: LedgerLoadingView(

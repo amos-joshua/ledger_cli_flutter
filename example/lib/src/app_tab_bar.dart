@@ -35,30 +35,36 @@ class _State extends State<AppTabBar> {
 
     final showQueryEditor = ledgerSource != null;
     final query = selectedTabIndex == 0 ? model.balancesQuery : tabQueries.queryAt(selectedTabIndex - 1);
+    final mediaQuery = MediaQuery.of(context);
 
     return
       Column(
         children:[
-          TabBar(
-            controller: widget.tabController,
-            tabs:[
-              const Tab(text: 'Balances'),
-              ...tabQueries.asMap().entries.map((entry) => EntriesTabLabel(
-                  index: entry.key + 1,
-                  icon: entry.value.value.groupBy == null ? Icons.list : Icons.trending_up,
-                  label: entry.value.value.accounts.join(','),
-                  onDelete: () {
-                    setState(() {
-                      if (model.selectedTabIndex.value == tabQueries.length) {
-                        model.selectedTabIndex.value -= 1;
-                      }
-                      tabQueries.removeAt(entry.key);
-                    });
-                  },
-                  tabController: widget.tabController
+          SizedBox(
+            width: mediaQuery.size.width,
+            child: TabBar(
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              controller: widget.tabController,
+              tabs:[
+                const Tab(text: 'Balances'),
+                ...tabQueries.asMap().entries.map((entry) => EntriesTabLabel(
+                    index: entry.key + 1,
+                    icon: entry.value.value.groupBy == null ? Icons.list : Icons.trending_up,
+                    label: entry.value.value.accounts.join(','),
+                    onDelete: () {
+                      setState(() {
+                        if (model.selectedTabIndex.value == tabQueries.length) {
+                          model.selectedTabIndex.value -= 1;
+                        }
+                        tabQueries.removeAt(entry.key);
+                      });
+                    },
+                    tabController: widget.tabController
+                  )
                 )
-              )
-            ]
+              ]
+            )
           ),
           if (showQueryEditor) QueryEditorBar(
               query: query,

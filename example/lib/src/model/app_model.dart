@@ -10,7 +10,7 @@ class AppModel {
   var ledgerLoading = LedgerLoadingAttr(false);
   var ledger = Ledger();
 
-  var balancesQuery = BalancesQueryAttr(Query());
+  var balancesQuery = BalancesQueryAttr(Query(accounts: ['Assets']));
 
   final tabQueries = QueryList();
   final selectedTabIndex = SelectedTabIndexAttr(0);
