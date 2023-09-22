@@ -13,6 +13,12 @@ class AppController  {
 
   final _errorStreamController = StreamController<UserFacingError>.broadcast();
   Stream<UserFacingError> get errorStream => _errorStreamController.stream;
+
+  void addError(UserFacingError error) {
+    model.errors.add(error);
+    _errorStreamController.add(error);
+  }
+
   final model = AppModel();
 
   Future<void> loadPreferences(String path) async {
@@ -23,7 +29,7 @@ class AppController  {
       model.ledgerSource.value = LedgerSource.forFile(preferences.defaultLedgerFile);
     }
     catch (exc, stackTrace) {
-      _errorStreamController.add(UserFacingError(message: 'Error loading ledger preferences: $exc', stackTrace: stackTrace));
+      addError(UserFacingError(message: 'Error loading ledger preferences: $exc', stackTrace: stackTrace));
     }
     model.preferencesLoading.value = false;
   }
@@ -32,13 +38,13 @@ class AppController  {
     model.ledgerLoading.value = true;
     try {
       model.ledger = await ledgerLoader.load(source, onApplyFailure: (edit, exc, stackTrace) {
-        //print("ERROR: could not apply $edit: $exc\n$stackTrace");
-        // TODO: file away in model error log
+        final userError = UserFacingError(message: edit != null ? 'Could not apply $edit: $exc' : '$exc', stackTrace: stackTrace);
+        model.errors.add(userError);
       });
       ledgerSourceWatcher.watch(source);
     }
     catch (exc, stackTrace) {
-      _errorStreamController.add(UserFacingError(message: 'Error loading ledger from $source: $exc', stackTrace: stackTrace));
+      addError(UserFacingError(message: 'Error loading ledger from $source: $exc', stackTrace: stackTrace));
     }
     model.ledgerLoading.value = false;
   }

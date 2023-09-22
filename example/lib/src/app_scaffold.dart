@@ -15,6 +15,7 @@ import 'preferences_loading_view.dart';
 import 'ledger_loading_view.dart';
 import 'app_tab_view.dart';
 import 'model/model.dart';
+import 'errors_list_view.dart';
 
 class TabBarContainer extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
@@ -45,7 +46,6 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
     super.initState();
     appController = context.read<AppController>();
     errorStreamSubscription = appController.errorStream.listen((error) {
-      //print('App scaffold ERROR: ${error.message}\n${error.stackTrace}');
       AlertMessageDialog(context).show(
         title: 'Error',
         message: error.message
@@ -71,19 +71,11 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
         bottom: AppTabBar(tabController: tabController),
         actions: [
           IconButton(
-            icon: const Icon(Icons.move_to_inbox),
-            tooltip: 'Import',
+            icon: const Icon(Icons.message),
+            tooltip: 'Logs',
             onPressed: () {
-              final importStarter = ImportStarter();
-              importStarter.startImport(
-                  context,
-                  ledgerPreferences: model.ledgerPreferences,
-                  accountManager: model.ledger.accountManager
-              ).then((importSession) {
-                if (importSession == null) return;
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImportScreen(importSession: importSession, ledgerPreferences: model.ledgerPreferences)));
-              });
-            }
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ErrorsListView()));
+            },
           ),
           IconButton(
             icon: const Icon(Icons.folder),
@@ -94,14 +86,29 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
                 if (source != null) ledgerSource.value = source;
               });
             },
-          )
+          ),
+          IconButton(
+              icon: const Icon(Icons.move_to_inbox),
+              tooltip: 'Import',
+              onPressed: () {
+                final importStarter = ImportStarter();
+                importStarter.startImport(
+                    context,
+                    ledgerPreferences: model.ledgerPreferences,
+                    accountManager: model.ledger.accountManager
+                ).then((importSession) {
+                  if (importSession == null) return;
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImportScreen(importSession: importSession, ledgerPreferences: model.ledgerPreferences)));
+                });
+              }
+          ),
         ],
       ),
       body: PreferencesLoadingView(
           child: LedgerLoadingView(
               child: AppTabView(tabController: tabController)
           )
-      )
+      ),
     );
   }
 }
