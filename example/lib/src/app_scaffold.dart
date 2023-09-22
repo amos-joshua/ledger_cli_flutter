@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
@@ -55,6 +56,7 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final model = context.read<AppModel>();
+    final ledgerSource = context.watch<LedgerSourceAttr>();
     final tabQueries = context.watch<QueryList>();
 
     final tabController = TabController(
@@ -87,8 +89,9 @@ class _State extends State<AppScaffold> with TickerProviderStateMixin {
             icon: const Icon(Icons.folder),
             tooltip: 'Open',
             onPressed: () {
-              SelectLedgerFileDialog(context).show(initialDirectory: File(model.ledgerPreferences.defaultLedgerFile).parent.path).then((source) {
-                if (source != null) appController.loadLedger(source);
+              final initialDirectory = kIsWeb ? null : File(model.ledgerPreferences.defaultLedgerFile).parent.path;
+              SelectLedgerFileDialog(context).show(initialDirectory: initialDirectory).then((source) {
+                if (source != null) ledgerSource.value = source;
               });
             },
           )

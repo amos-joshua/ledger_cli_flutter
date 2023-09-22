@@ -27,11 +27,12 @@ class _State extends State<LedgerLoadingView> {
     final loading = context.watch<LedgerLoadingAttr>().value;
     if ((ledgerSource != null) && (ledgerSource != lastLoadedSource)) {
       lastLoadedSource = ledgerSource;
-      Future.delayed(const Duration(milliseconds: 80), () {
+      Future.delayed(const Duration(milliseconds: 150), () {
         // Note: delay loading the ledger, to avoid modifying state variables during build
         appController.loadLedger(ledgerSource);
       });
     }
+    // TODO: make the app remember the last opened file and suggest that
     return loading ? loadingAnimation() : ledgerSource == null ? const SelectAFileScreen() : widget.child;
   }
 }

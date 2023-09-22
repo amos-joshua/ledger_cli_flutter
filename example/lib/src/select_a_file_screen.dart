@@ -1,33 +1,23 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'dialogs/dialogs.dart';
 import 'model/model.dart';
-import 'controller/app_controller.dart';
 
 class SelectAFileScreen extends StatelessWidget {
   const SelectAFileScreen({super.key});
 
   void onSelectFileTapped(BuildContext context) {
-    final appController = context.read<AppController>();
     final preferences = context.read<AppModel>().ledgerPreferences;
-    SelectLedgerFileDialog(context).show(initialDirectory: File(preferences.defaultLedgerFile).parent.path).then((source) {
+    final ledgerSource = context.read<LedgerSourceAttr>();
+    final initialDirectory = kIsWeb ? null : File(preferences.defaultLedgerFile).parent.path;
+    SelectLedgerFileDialog(context).show(initialDirectory: initialDirectory).then((source) {
       if (source != null) {
-        appController.loadLedger(source);
+        ledgerSource.value = source;
       }
     });
-    /*
-    FilePicker.platform.pickFiles(initialDirectory: File(preferences.defaultLedgerFile).parent.path).then((result) {
-      if (result == null) return;
-      final ledgerPath = result.files.single.path;
-      if (ledgerPath == null) {
-        AlertMessageDialog(context).show(title: 'Error loading file', message: 'path is empty');
-        return;
-      }
-      final source = LedgerSource.forFile(ledgerPath);
-      appController.loadLedger(source);
-    });*/
   }
 
   @override
