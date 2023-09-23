@@ -1,3 +1,7 @@
+## 0.2.0
+* simplified sample app
+* removed inherited widget support
+
 ## 0.1.1
 * fix typo in readme
 
