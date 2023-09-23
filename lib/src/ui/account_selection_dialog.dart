@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ledger_cli/ledger_cli.dart';
 import 'query_editor_bar/text_field_delay.dart';
 
 class AccountSelectionDialog extends StatefulWidget {
