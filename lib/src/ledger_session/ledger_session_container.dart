@@ -16,7 +16,6 @@ class LedgerSessionContainerState extends State<LedgerSessionContainer> {
   @override
   void initState() {
     super.initState();
-    print("DBG creating LedgerSessionContainer [key: ${widget.key}]");
   }
 
   @override
