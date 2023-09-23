@@ -10,8 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  ledger_cli: #^0.1.1
-    path: ../ledger-cli-dart
+  ledger_cli: ^0.2.0
   intl: ^0.18.0
 
 dev_dependencies:
