@@ -1,6 +1,6 @@
 name: ledger_cli_flutter
 description: Flutter components for displaying ledger-cli data
-version: 0.1.1
+version: 0.2.0
 homepage: https://github.com/amos-joshua/ledger_cli_flutter
 
 environment:
