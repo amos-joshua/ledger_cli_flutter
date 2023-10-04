@@ -1,3 +1,6 @@
+## 0.2.1
+* bump ledger-cli (dart package) to v0.2.1
+
 ## 0.2.0
 * simplified sample app
 * removed inherited widget support
