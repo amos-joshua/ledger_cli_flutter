@@ -22,7 +22,7 @@ class LedgerPreferencesContainer extends StatefulWidget {
 }
 
 class LedgerPreferencesContainerState extends State<LedgerPreferencesContainer> {
-  final ledgerPreferencesParser = LedgerPreferencesParser();
+  final ledgerPreferencesParser = const LedgerPreferencesParser();
   late final LedgerPreferences ledgerPreferences;
   var didLoad = false;
 

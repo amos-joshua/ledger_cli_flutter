@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ledger_cli/ledger_cli.dart';
-import 'package:ledger_cli_flutter/ledger_cli_flutter.dart';
 import 'account_selection_dialog.dart';
 import 'query_editor_bar/query_badge.dart';
 
