@@ -1,5 +1,8 @@
+## 0.2.3
+* bump ledger-cli (dart package) to v0.2.3
+
 ## 0.2.2
-* bump ledger-cli (dart package) to v0.2.
+* bump ledger-cli (dart package) to v0.2.2
 
 ## 0.2.1
 * bump ledger-cli (dart package) to v0.2.1
